@@ -13,6 +13,8 @@ from pathlib import Path
 from .analysis import analyze
 from .core import scan_sbom, sha256
 from .database import fetch_database, validate_database
+from .integrity import check_lockfile_integrity, check_package_cool_off
+from .mcp import run_mcp_server
 from .sbom import parse_sbom
 from .wizard import wizard
 from .word import write_word_report
@@ -38,6 +40,7 @@ def _main(argv: list[str] | None = None) -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     interactive = commands.add_parser("wizard", help="Interactive setup in English or Japanese")
     interactive.add_argument("--lang", choices=("en", "ja"))
+    commands.add_parser("mcp", help="Start the SecuLens Model Context Protocol (MCP) stdio server")
     sbom = commands.add_parser("sbom", help="Generate CycloneDX or SPDX JSON using Syft")
     sbom.add_argument("project", type=Path)
     sbom.add_argument("--format", choices=("cyclonedx", "spdx"), default="cyclonedx")
@@ -52,6 +55,12 @@ def _main(argv: list[str] | None = None) -> int:
     )
     scan.add_argument("--policy", type=Path)
     scan.add_argument("--source", type=Path, help="Run Python AST review rules")
+    scan.add_argument(
+        "--cool-off",
+        type=int,
+        metavar="DAYS",
+        help="Flag packages released within the last N days (cool-off period)",
+    )
     scan.add_argument("--customer", default="Customer")
     scan.add_argument("--target", help="Human-readable system or project name")
     scan.add_argument("--report-style", choices=("standard", "customer"), default="standard")
@@ -71,6 +80,9 @@ def _main(argv: list[str] | None = None) -> int:
         if args is None:
             return 0
         opts = parser.parse_args(args)
+    if opts.command == "mcp":
+        run_mcp_server()
+        return 0
     try:
         if opts.command == "sbom":
             if not opts.project.is_dir():
@@ -124,7 +136,14 @@ def _main(argv: list[str] | None = None) -> int:
         )
         if opts.source:
             report["findings"].extend(analyze(opts.source))
+            report["findings"].extend(check_lockfile_integrity(opts.source, parsed))
             report["sourceAnalysis"] = {"language": "Python", "target": opts.source.resolve().name}
+        else:
+            report["findings"].extend(check_lockfile_integrity(opts.sbom.parent, parsed))
+        if opts.cool_off:
+            report["findings"].extend(
+                check_package_cool_off(parsed["components"], min_days=opts.cool_off)
+            )
         opts.output.mkdir(parents=True, exist_ok=True, mode=0o700)
         with tempfile.TemporaryDirectory(prefix=".seculens-", dir=opts.output) as folder:
             temporary = Path(folder)

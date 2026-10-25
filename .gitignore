@@ -1,9 +1,42 @@
+# Virtual environments & build
 .venv/
+venv/
+ENV/
+env/
 __pycache__/
 *.py[cod]
+dist/
+build/
+*.egg-info/
+releases/
+
+# Testing & linting caches
 .pytest_cache/
 .ruff_cache/
-dist/
-*.egg-info/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# SecuLens outputs & reports
+.seculens/
 reports/
-releases/
+*.docx
+*.json.bak
+
+# Environment variables & secrets
+.env*
+*.pem
+*.key
+
+# Logs & temp
+*.log
+.temp/
+.tmp/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo

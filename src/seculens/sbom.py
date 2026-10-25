@@ -57,6 +57,12 @@ def parse_sbom(data: Any) -> dict[str, Any]:
                 if _text(item.get("purl")):
                     component["purl"] = item["purl"]
                     component.update(_identity(item["purl"]))
+                if isinstance(item.get("hashes"), list):
+                    component["hashes"] = [
+                        {"alg": str(h["alg"]), "content": str(h["content"])}
+                        for h in item["hashes"]
+                        if isinstance(h, dict) and _text(h.get("alg")) and _text(h.get("content"))
+                    ]
                 for entry in item.get("licenses", []):
                     if not isinstance(entry, dict):
                         raise ValueError("License entries must be objects")
@@ -107,6 +113,12 @@ def parse_sbom(data: Any) -> dict[str, Any]:
             if _text(purl):
                 component["purl"] = purl
                 component.update(_identity(purl))
+            if isinstance(item.get("checksums"), list):
+                component["hashes"] = [
+                    {"alg": str(cs["algorithm"]), "content": str(cs["checksumValue"])}
+                    for cs in item["checksums"]
+                    if isinstance(cs, dict) and _text(cs.get("algorithm")) and _text(cs.get("checksumValue"))
+                ]
             components.append(component)
         for entry in data.get("relationships", []):
             if entry.get("relationshipType") == "DEPENDS_ON":
@@ -135,6 +147,7 @@ def parse_sbom(data: Any) -> dict[str, Any]:
             warnings.append(
                 f"Dependency endpoint not in component list: {edge['from']} -> {edge['to']}"
             )
+    compute_dependency_depths(components, dependencies)
     return {
         "format": fmt,
         "version": version,
@@ -142,3 +155,38 @@ def parse_sbom(data: Any) -> dict[str, Any]:
         "dependencies": dependencies,
         "warnings": warnings,
     }
+
+
+def compute_dependency_depths(
+    components: list[dict[str, Any]], dependencies: list[dict[str, str]]
+) -> None:
+    if not dependencies:
+        return
+    adj: dict[str, list[str]] = {c["id"]: [] for c in components}
+    in_degree: dict[str, int] = {c["id"]: 0 for c in components}
+    for dep in dependencies:
+        frm, to = dep.get("from", ""), dep.get("to", "")
+        if frm in adj:
+            adj[frm].append(to)
+        if to in in_degree:
+            in_degree[to] += 1
+
+    roots = [cid for cid, deg in in_degree.items() if deg == 0 and adj.get(cid)]
+    depths: dict[str, int] = {}
+    queue: list[tuple[str, int]] = []
+    for r in roots:
+        for child in adj.get(r, []):
+            if child not in depths:
+                depths[child] = 1
+                queue.append((child, 1))
+
+    while queue:
+        cid, depth = queue.pop(0)
+        for nxt in adj.get(cid, []):
+            if nxt not in depths or depths[nxt] > depth + 1:
+                depths[nxt] = depth + 1
+                queue.append((nxt, depth + 1))
+
+    for c in components:
+        if c["id"] in depths:
+            c["depth"] = depths[c["id"]]
