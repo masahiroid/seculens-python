@@ -36,7 +36,7 @@ def _main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="seculens", description="SBOM assessment and evidence-based customer reports"
     )
-    parser.add_argument("--version", action="version", version="1.0.0")
+    parser.add_argument("--version", action="version", version="1.1.0")
     commands = parser.add_subparsers(dest="command", required=True)
     interactive = commands.add_parser("wizard", help="Interactive setup in English or Japanese")
     interactive.add_argument("--lang", choices=("en", "ja"))

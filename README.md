@@ -4,7 +4,7 @@
 
 Independent Python implementation of SecuLens: assess SPDX / CycloneDX JSON SBOMs against OSV records, apply SPDX license-expression policies, review Python ASTs, and produce customer-facing Word and JSON reports. Python 3.10+; no Node.js or Trivy runtime required.
 
-Version 1.0.0 provides the assessment features described below. Full SAST and legal compliance determinations are outside its scope. A vulnerability match is evidence from the supplied advisory snapshot; a security AST finding is a review candidate.
+Version 1.1.0 provides the assessment features described below. Full SAST and legal compliance determinations are outside its scope. A vulnerability match is evidence from the supplied advisory snapshot; a security AST finding is a review candidate.
 
 ## Interactive wizard
 

@@ -10,7 +10,7 @@ from .mcp import MCP_TOOLS, handle_mcp_request, run_mcp_server
 from .sbom import compute_dependency_depths, parse_sbom
 from .word import write_word_report
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __all__ = [
     "scan_sbom",
     "sha256",

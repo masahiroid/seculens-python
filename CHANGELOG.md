@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0
+
+- Add lifecycle script detection (`SC-LIFECYCLE-SCRIPT`) in `package.json` and `package-lock.json`.
+- Add supply-chain AST inspection rules for subprocess execution (`PY-CHILD-PROCESS`), environment variable access (`PY-PROCESS-ENV`), and sensitive path references (`PY-SENSITIVE-PATH`).
+- Add Model Context Protocol (MCP) stdio server (`seculens mcp`) supporting Claude Desktop, Cursor, and other AI agents.
+- Add lockfile integrity verification (`SC-INTEGRITY-MISMATCH`, `SC-INSECURE-REGISTRY-URL`) and release cool-off check (`--cool-off`).
+- Add transitive dependency depth calculation in SBOM parsing.
+- Add weekly Dependabot automated updates and pull request dependency review workflow.
+
 ## 1.0.0
 
 - Align the Python, JavaScript/TypeScript and PHP release versions at 1.0.0.
