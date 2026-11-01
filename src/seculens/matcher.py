@@ -23,7 +23,40 @@ def same_package(component: dict[str, Any], package: dict[str, Any]) -> bool:
     ) == _canonical(package["name"], ecosystem)
 
 
+# Composer stability order: dev < alpha < beta < RC < stable < patch.
+_STABILITY = {
+    "alpha": 1,
+    "a": 1,
+    "beta": 2,
+    "b": 2,
+    "rc": 3,
+    "stable": 4,
+    "patch": 5,
+    "pl": 5,
+    "p": 5,
+}
+_COMPOSER = re.compile(
+    r"(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\.(\d+))?"
+    r"(?:[._-]?(stable|beta|b|rc|alpha|a|patch|pl|p)(?:[.-]?(\d+))?)?([.-]?dev)?",
+    re.IGNORECASE,
+)
+
+
+def _composer_key(text: str) -> tuple[int, ...] | None:
+    """Composer VersionParser normalization; branch versions return None."""
+    text = re.sub(r"^v", "", text.strip(), flags=re.IGNORECASE).split("+", 1)[0]
+    m = _COMPOSER.fullmatch(text)
+    if not m:
+        return None
+    rank = _STABILITY[m[5].lower()] if m[5] else (0 if m[7] else 4)
+    dev = 0 if m[5] and m[7] else 1
+    return (*(int(x or 0) for x in m.groups()[:4]), rank, int(m[6] or 0), dev)
+
+
 def compare(left: str, right: str, ecosystem: str) -> int | None:
+    if ecosystem == "Packagist":
+        a, b = _composer_key(left), _composer_key(right)
+        return None if a is None or b is None else (a > b) - (a < b)
     try:
         if ecosystem == "PyPI":
             a, b = PepVersion(left), PepVersion(right)
@@ -33,10 +66,6 @@ def compare(left: str, right: str, ecosystem: str) -> int | None:
                 # npm's semver library accepts a leading v (and = prefix).
                 if ecosystem == "npm":
                     text = text.strip().lstrip("v=")
-                elif ecosystem == "Packagist":
-                    text = text.removeprefix("v")
-                    if re.fullmatch(r"\d+\.\d+\.\d+\.0", text):
-                        text = text[:-2]
                 return text
 
             a, b = SemVersion(normalize(left)), SemVersion(normalize(right))

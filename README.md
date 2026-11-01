@@ -100,7 +100,7 @@ report = scan_sbom(sbom_text, records, policy={"allow": ["MIT"]}, customer="Cust
 write_word_report(report, "report.docx", language="ja")
 ```
 
-Schema `1.1` is shared with the TypeScript implementation. Advisory matching supports PyPI PEP 440, npm SemVer and stable numeric Composer versions / SemVer prereleases; Composer branches and Git commit ranges can remain unassessed. Customer-specific risk prioritization, reachability, container/OS scanning and full SAST are future work. Reports do not claim those checks were performed.
+Schema `1.1` is shared with the TypeScript implementation. Advisory matching supports PyPI PEP 440, npm SemVer and Composer versions with Composer stability ordering (dev, alpha, beta, RC, stable, patch); Composer branches and Git commit ranges can remain unassessed. Customer-specific risk prioritization, reachability, container/OS scanning and full SAST are future work. Reports do not claim those checks were performed.
 
 ## Validation
 

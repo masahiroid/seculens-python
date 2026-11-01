@@ -105,7 +105,7 @@ report = scan_sbom(sbom_text, records, policy={"allow": ["MIT"]}, customer="顧�
 write_word_report(report, "report.docx", language="ja")
 ```
 
-JSONスキーマ1.1はTypeScript版と共通です。照合にはPyPIのPEP 440、npmのSemVer、Composerの安定版数値バージョンとSemVerプレリリースに対応します。ComposerのブランチやGitコミット範囲は未評価になる場合があります。顧客固有のリスク優先順位付け、到達可能性、コンテナー／OSのスキャン、完全なSASTは今後の課題です。レポートでは未実施の検査を実施済みと扱いません。
+JSONスキーマ1.1はTypeScript版と共通です。照合にはPyPIのPEP 440、npmのSemVer、Composerのバージョン（安定度の順序 dev／alpha／beta／RC／stable／patch を含む）に対応します。ComposerのブランチやGitコミット範囲は未評価になる場合があります。顧客固有のリスク優先順位付け、到達可能性、コンテナー／OSのスキャン、完全なSASTは今後の課題です。レポートでは未実施の検査を実施済みと扱いません。
 
 ## 検証・開発
 

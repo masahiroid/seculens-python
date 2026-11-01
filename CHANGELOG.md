@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+
+- Packagist matching now follows Composer version normalization: one to four numeric parts (e.g. `5.4.0.1`), build metadata ignored, and stability order dev < alpha < beta < RC < stable < patch (`a`, `b`, `pl`, `p` aliases and `-dev` suffixes included).
+- Branch versions such as `dev-main` and `1.x-dev` remain unassessed, and other unrecognized Composer syntax is reported as unknown instead of guessed.
+- Add a shared Composer version test corpus (`composer-versions.json`) used identically by the TypeScript, Python and PHP implementations.
+
 ## 1.3.0
 
 - Require Python 3.11 or later. Python 3.10 reached end of life in October 2026; installers on 3.10 keep resolving 1.2.0.

@@ -18,7 +18,7 @@ LIMITATIONS = [
     "License policy checks are not a legal compliance determination.",
     "AST rules identify review candidates and complexity, not proven exploitability.",
     "SBOM content and package identifiers are supplied by the generating tool.",
-    "Packagist matching supports stable numeric versions and SemVer prereleases only; Composer branches and other version forms may be unassessed.",
+    "Packagist matching follows Composer version normalization (up to four numeric parts and dev/alpha/beta/RC/stable/patch stability); branch versions such as dev-main or 1.x-dev are unassessed.",
 ]
 
 
@@ -42,7 +42,7 @@ def scan_sbom(
     policy = validate_policy({} if policy is None else policy)
     report: dict[str, Any] = {
         "schemaVersion": "1.1",
-        "tool": {"name": "SecuLens", "version": "1.3.0"},
+        "tool": {"name": "SecuLens", "version": "1.4.0"},
         "createdAt": created_at
         or datetime.now(UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
         "customer": customer,
