@@ -117,7 +117,9 @@ def parse_sbom(data: Any) -> dict[str, Any]:
                 component["hashes"] = [
                     {"alg": str(cs["algorithm"]), "content": str(cs["checksumValue"])}
                     for cs in item["checksums"]
-                    if isinstance(cs, dict) and _text(cs.get("algorithm")) and _text(cs.get("checksumValue"))
+                    if isinstance(cs, dict)
+                    and _text(cs.get("algorithm"))
+                    and _text(cs.get("checksumValue"))
                 ]
             components.append(component)
         for entry in data.get("relationships", []):

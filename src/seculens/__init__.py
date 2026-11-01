@@ -8,11 +8,13 @@ from .licenses import evaluate_license
 from .matcher import match_record
 from .mcp import MCP_TOOLS, handle_mcp_request, run_mcp_server
 from .sbom import compute_dependency_depths, parse_sbom
+from .validation import validate_document
 from .word import write_word_report
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __all__ = [
     "scan_sbom",
+    "validate_document",
     "sha256",
     "parse_sbom",
     "compute_dependency_depths",

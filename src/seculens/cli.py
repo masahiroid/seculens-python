@@ -16,6 +16,7 @@ from .database import fetch_database, validate_database
 from .integrity import check_lockfile_integrity, check_package_cool_off
 from .mcp import run_mcp_server
 from .sbom import parse_sbom
+from .validation import validate_document
 from .wizard import wizard
 from .word import write_word_report
 
@@ -36,11 +37,14 @@ def _main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="seculens", description="SBOM assessment and evidence-based customer reports"
     )
-    parser.add_argument("--version", action="version", version="1.1.0")
+    parser.add_argument("--version", action="version", version="1.2.0")
     commands = parser.add_subparsers(dest="command", required=True)
     interactive = commands.add_parser("wizard", help="Interactive setup in English or Japanese")
     interactive.add_argument("--lang", choices=("en", "ja"))
     commands.add_parser("mcp", help="Start the SecuLens Model Context Protocol (MCP) stdio server")
+    validation = commands.add_parser("validate", help="Validate SBOM or report JSON offline")
+    validation.add_argument("file", type=Path)
+    validation.add_argument("--kind", choices=("sbom", "report"), default="sbom")
     sbom = commands.add_parser("sbom", help="Generate CycloneDX or SPDX JSON using Syft")
     sbom.add_argument("project", type=Path)
     sbom.add_argument("--format", choices=("cyclonedx", "spdx"), default="cyclonedx")
@@ -84,6 +88,10 @@ def _main(argv: list[str] | None = None) -> int:
         run_mcp_server()
         return 0
     try:
+        if opts.command == "validate":
+            result = validate_document(json.loads(opts.file.read_text(encoding="utf-8")), opts.kind)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0 if result["valid"] else 2
         if opts.command == "sbom":
             if not opts.project.is_dir():
                 raise ValueError("Project must be a directory")

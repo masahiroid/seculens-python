@@ -78,6 +78,15 @@ SPDX `AND` requires all branches to be allowed; `OR` accepts an allowed option. 
 
 `--source` parses `.py` files without importing or executing them. Rules review `eval` / `exec`, OS shell calls, `subprocess` with literal `shell=True`, pickle deserialization and YAML loading without an explicit safe loader. Complexity review triggers above cyclomatic 10 or nesting 4. Imports and aliases are recognized syntactically; shadowing, dynamic aliases, data flow and exploitability are not resolved. Syntax errors become coverage findings. Virtual environments, dependency/build directories and symlinks are skipped. JS/TS source analysis belongs to the [TypeScript implementation](https://github.com/masahiroid/seculens); PHP source analysis is available in the [independent PHP implementation](https://github.com/masahiroid/seculens-php).
 
+## Schema validation
+
+```sh
+seculens validate sbom.json                 # SPDX 2.2/2.3 or CycloneDX 1.4–1.7 JSON
+seculens validate report.json --kind report # SecuLens report schema 1.1
+```
+
+Validation runs offline against the official schemas bundled in `schemas/` (see its README for sources, hashes and licenses). Output is JSON `{valid, schema, errors[]}`. Exit code `0` means valid; `2` means invalid, an unsupported version, or an input error. Schema validation checks structure and formats only; it does not prove an SBOM is complete or that findings are correct.
+
 ## Exit status and API
 
 - `0`: assessment completed (findings may exist).

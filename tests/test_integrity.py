@@ -1,8 +1,8 @@
 import json
+
 from seculens import (
-    compute_dependency_depths,
     check_lockfile_integrity,
-    check_package_cool_off,
+    compute_dependency_depths,
 )
 
 
@@ -26,14 +26,18 @@ def test_compute_dependency_depths():
 
 
 def test_lockfile_integrity_insecure_url(tmp_path):
-    (tmp_path / "package-lock.json").write_text(json.dumps({
-        "packages": {
-            "node_modules/insecure-lib": {
-                "version": "1.0.0",
-                "resolved": "http://evil-mirror.org/insecure-lib-1.0.0.tgz",
+    (tmp_path / "package-lock.json").write_text(
+        json.dumps(
+            {
+                "packages": {
+                    "node_modules/insecure-lib": {
+                        "version": "1.0.0",
+                        "resolved": "http://evil-mirror.org/insecure-lib-1.0.0.tgz",
+                    }
+                }
             }
-        }
-    }))
+        )
+    )
     sbom = {
         "components": [{"id": "c1", "name": "insecure-lib", "version": "1.0.0"}],
     }
@@ -43,23 +47,33 @@ def test_lockfile_integrity_insecure_url(tmp_path):
 
 
 def test_lockfile_integrity_mismatch(tmp_path):
-    (tmp_path / "package-lock.json").write_text(json.dumps({
-        "packages": {
-            "node_modules/tampered-pkg": {
-                "version": "2.0.0",
-                "integrity": "sha512-LOCKFILE_FAKE_HASH_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+    (tmp_path / "package-lock.json").write_text(
+        json.dumps(
+            {
+                "packages": {
+                    "node_modules/tampered-pkg": {
+                        "version": "2.0.0",
+                        "integrity": "sha512-LOCKFILE_FAKE_HASH_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+                    }
+                }
             }
-        }
-    }))
+        )
+    )
     sbom = {
-        "components": [{
-            "id": "c1",
-            "name": "tampered-pkg",
-            "version": "2.0.0",
-            "hashes": [{"alg": "SHA-512", "content": "SBOM_GENUINE_HASH_BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=="}],
-        }],
+        "components": [
+            {
+                "id": "c1",
+                "name": "tampered-pkg",
+                "version": "2.0.0",
+                "hashes": [
+                    {
+                        "alg": "SHA-512",
+                        "content": "SBOM_GENUINE_HASH_BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB==",
+                    }
+                ],
+            }
+        ],
     }
     findings = check_lockfile_integrity(tmp_path, sbom)
     assert len(findings) == 1
     assert findings[0]["ruleId"] == "SC-INTEGRITY-MISMATCH"
-

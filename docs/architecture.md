@@ -4,6 +4,8 @@ The Python implementation owns SBOM normalization, ecosystem version comparisons
 
 `report.json` uses SecuLens schema 1.1: tool/version, creation time, customer, target, SBOM and database hashes, normalized components/dependencies/warnings, per-component checks, findings and limitations. Fixed input text, advisory records and `created_at` produce deterministic assessment JSON. Word font embedding uses a generated GUID, so DOCX bytes are not deterministic.
 
+`validation.py` validates SBOM and report JSON offline against the schemas bundled in `src/seculens/schemas/` (shared byte-for-byte with the TypeScript and PHP repositories). It never resolves remote references.
+
 Advisory IDs and aliases are merged transitively per component. No CVSS severity is inferred from match count. Unknown package identities, unsupported version syntax and unevaluable candidate ranges are reported as incomplete coverage. Syntax errors are also coverage findings. Static review candidates do not establish exploitability.
 
 Offline mode saves the exact supplied SBOM and database text. OSV mode saves the fetched candidate records and performs version comparison locally, rather than trusting version-filtered remote matches. SPDX license obligations beyond the configured allow/deny policy are not determined.

@@ -169,7 +169,9 @@ def analyze(directory: str | Path) -> list[dict[str, Any]]:
                     for method in ("run", "Popen", "call", "check_call", "check_output")
                 }:
                     is_shell = any(
-                        k.arg == "shell" and isinstance(k.value, ast.Constant) and k.value.value is True
+                        k.arg == "shell"
+                        and isinstance(k.value, ast.Constant)
+                        and k.value.value is True
                         for k in node.keywords
                     )
                     add(
@@ -294,7 +296,7 @@ def check_lifecycle_scripts(directory: str | Path) -> list[dict[str, Any]]:
                                 "subject": name,
                                 "status": "review",
                                 "summary": f"Dependency has install script: {name}",
-                                "evidence": f'hasInstallScript: true (version: {pkg_val.get("version", "unknown")})',
+                                "evidence": f"hasInstallScript: true (version: {pkg_val.get('version', 'unknown')})",
                                 "recommendation": (
                                     "Review the package installation scripts or use --ignore-scripts."
                                 ),

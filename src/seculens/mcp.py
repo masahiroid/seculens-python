@@ -120,7 +120,7 @@ def handle_mcp_request(request: dict[str, Any]) -> dict[str, Any] | None:
             "result": {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}},
-                "serverInfo": {"name": "seculens-python", "version": "1.1.0"},
+                "serverInfo": {"name": "seculens-python", "version": "1.2.0"},
             },
         }
 
@@ -299,4 +299,3 @@ def run_mcp_server() -> None:
                 + "\n"
             )
             sys.stdout.flush()
-

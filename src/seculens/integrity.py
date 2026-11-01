@@ -4,15 +4,13 @@ from __future__ import annotations
 
 import base64
 import json
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-import urllib.request
 
 
-def check_lockfile_integrity(
-    directory: str | Path, sbom: dict[str, Any]
-) -> list[dict[str, Any]]:
+def check_lockfile_integrity(directory: str | Path, sbom: dict[str, Any]) -> list[dict[str, Any]]:
     root = Path(directory).resolve()
     findings: list[dict[str, Any]] = []
 
@@ -38,19 +36,21 @@ def check_lockfile_integrity(
                 integrity = pkg_val.get("integrity", "")
 
                 if isinstance(resolved, str) and resolved.startswith("http://"):
-                    findings.append({
-                        "category": "security",
-                        "ruleId": "SC-INSECURE-REGISTRY-URL",
-                        "subject": pkg_name,
-                        "status": "review",
-                        "summary": f"Insecure HTTP package resolution URL: {pkg_name}",
-                        "evidence": f'resolved: "{resolved}"',
-                        "recommendation": (
-                            "Replace HTTP package sources with secure HTTPS registries "
-                            "to prevent man-in-the-middle attacks."
-                        ),
-                        "file": "package-lock.json",
-                    })
+                    findings.append(
+                        {
+                            "category": "security",
+                            "ruleId": "SC-INSECURE-REGISTRY-URL",
+                            "subject": pkg_name,
+                            "status": "review",
+                            "summary": f"Insecure HTTP package resolution URL: {pkg_name}",
+                            "evidence": f'resolved: "{resolved}"',
+                            "recommendation": (
+                                "Replace HTTP package sources with secure HTTPS registries "
+                                "to prevent man-in-the-middle attacks."
+                            ),
+                            "file": "package-lock.json",
+                        }
+                    )
 
                 key = f"{pkg_name}@{version}"
                 if key in sbom_hashes and integrity and "-" in integrity:
@@ -68,19 +68,21 @@ def check_lockfile_integrity(
                                 matched = True
                                 break
                     if not matched and sbom_hashes[key]:
-                        findings.append({
-                            "category": "security",
-                            "ruleId": "SC-INTEGRITY-MISMATCH",
-                            "subject": pkg_name,
-                            "status": "review",
-                            "summary": f"Lockfile integrity hash mismatch for {pkg_name}@{version}",
-                            "evidence": f'lockfile: "{integrity}"; SBOM: {sbom_hashes[key]}',
-                            "recommendation": (
-                                "Investigate possible package tampering or lockfile poisoning "
-                                "before installing or deploying."
-                            ),
-                            "file": "package-lock.json",
-                        })
+                        findings.append(
+                            {
+                                "category": "security",
+                                "ruleId": "SC-INTEGRITY-MISMATCH",
+                                "subject": pkg_name,
+                                "status": "review",
+                                "summary": f"Lockfile integrity hash mismatch for {pkg_name}@{version}",
+                                "evidence": f'lockfile: "{integrity}"; SBOM: {sbom_hashes[key]}',
+                                "recommendation": (
+                                    "Investigate possible package tampering or lockfile poisoning "
+                                    "before installing or deploying."
+                                ),
+                                "file": "package-lock.json",
+                            }
+                        )
         except Exception:
             pass
 
@@ -96,16 +98,18 @@ def check_lockfile_integrity(
                 name = p.get("name", "")
                 dist_url = p.get("dist", {}).get("url", "")
                 if isinstance(dist_url, str) and dist_url.startswith("http://"):
-                    findings.append({
-                        "category": "security",
-                        "ruleId": "SC-INSECURE-REGISTRY-URL",
-                        "subject": name,
-                        "status": "review",
-                        "summary": f"Insecure HTTP download URL in composer.lock: {name}",
-                        "evidence": f'dist.url: "{dist_url}"',
-                        "recommendation": "Use secure HTTPS package sources to avoid tampering.",
-                        "file": "composer.lock",
-                    })
+                    findings.append(
+                        {
+                            "category": "security",
+                            "ruleId": "SC-INSECURE-REGISTRY-URL",
+                            "subject": name,
+                            "status": "review",
+                            "summary": f"Insecure HTTP download URL in composer.lock: {name}",
+                            "evidence": f'dist.url: "{dist_url}"',
+                            "recommendation": "Use secure HTTPS package sources to avoid tampering.",
+                            "file": "composer.lock",
+                        }
+                    )
         except Exception:
             pass
 
@@ -138,23 +142,24 @@ def check_package_cool_off(
                     pub_date = datetime.fromisoformat(iso_time.replace("Z", "+00:00"))
                     diff_days = (now - pub_date).days
                     if 0 <= diff_days < min_days:
-                        findings.append({
-                            "category": "security",
-                            "ruleId": "SC-PACKAGE-AGE-UNVERIFIED",
-                            "subject": f"{name}@{version}",
-                            "status": "review",
-                            "summary": f"Package version was released recently ({diff_days} day(s) ago)",
-                            "evidence": (
-                                f"Published on {iso_time} ({diff_days} days ago; "
-                                f"cool-off threshold={min_days} days)"
-                            ),
-                            "recommendation": (
-                                "Allow a cool-off period before upgrading in production "
-                                "to guard against compromised zero-day releases."
-                            ),
-                        })
+                        findings.append(
+                            {
+                                "category": "security",
+                                "ruleId": "SC-PACKAGE-AGE-UNVERIFIED",
+                                "subject": f"{name}@{version}",
+                                "status": "review",
+                                "summary": f"Package version was released recently ({diff_days} day(s) ago)",
+                                "evidence": (
+                                    f"Published on {iso_time} ({diff_days} days ago; "
+                                    f"cool-off threshold={min_days} days)"
+                                ),
+                                "recommendation": (
+                                    "Allow a cool-off period before upgrading in production "
+                                    "to guard against compromised zero-day releases."
+                                ),
+                            }
+                        )
         except Exception:
             pass
 
     return findings
-

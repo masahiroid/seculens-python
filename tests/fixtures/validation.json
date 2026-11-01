@@ -1,0 +1,1173 @@
+[
+  {
+    "name": "cdx-1.4",
+    "kind": "sbom",
+    "valid": true,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.4-bad-component-type",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "version": 1,
+      "components": [
+        {
+          "type": "bogus",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.4-bad-nested-component",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "components": [
+            null
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.4-bad-license",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "not-a-license"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.4-bad-hash",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "short"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.4-bad-dependency",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "dependencies": [
+        {
+          "ref": "a",
+          "dependsOn": [
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.4-bad-unknown-field",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "unexpected": true
+    }
+  },
+  {
+    "name": "cdx-1.4-bad-format",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "timestamp": "yesterday"
+      }
+    }
+  },
+  {
+    "name": "cdx-1.4-bad-email",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.4",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "authors": [
+          {
+            "email": "no email"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "cdx-1.5",
+    "kind": "sbom",
+    "valid": true,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.5-bad-component-type",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "version": 1,
+      "components": [
+        {
+          "type": "bogus",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.5-bad-nested-component",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "components": [
+            null
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.5-bad-license",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "not-a-license"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.5-bad-hash",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "short"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.5-bad-dependency",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "dependencies": [
+        {
+          "ref": "a",
+          "dependsOn": [
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.5-bad-unknown-field",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "unexpected": true
+    }
+  },
+  {
+    "name": "cdx-1.5-bad-format",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "timestamp": "yesterday"
+      }
+    }
+  },
+  {
+    "name": "cdx-1.5-bad-email",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.5",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "authors": [
+          {
+            "email": "no email"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "cdx-1.6",
+    "kind": "sbom",
+    "valid": true,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.6",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.6-bad-component-type",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.6",
+      "version": 1,
+      "components": [
+        {
+          "type": "bogus",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.6-bad-nested-component",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.6",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "components": [
+            null
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.6-bad-license",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.6",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "not-a-license"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.6-bad-hash",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.6",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "short"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.6-bad-dependency",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.6",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "dependencies": [
+        {
+          "ref": "a",
+          "dependsOn": [
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.6-bad-unknown-field",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.6",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "unexpected": true
+    }
+  },
+  {
+    "name": "cdx-1.6-bad-format",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.6",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "timestamp": "yesterday"
+      }
+    }
+  },
+  {
+    "name": "cdx-1.6-bad-email",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.6",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "authors": [
+          {
+            "email": "no email"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "cdx-1.7",
+    "kind": "sbom",
+    "valid": true,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.7",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.7-bad-component-type",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.7",
+      "version": 1,
+      "components": [
+        {
+          "type": "bogus",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.7-bad-nested-component",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.7",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "components": [
+            null
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.7-bad-license",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.7",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "not-a-license"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.7-bad-hash",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.7",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ],
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "short"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.7-bad-dependency",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.7",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "dependencies": [
+        {
+          "ref": "a",
+          "dependsOn": [
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "cdx-1.7-bad-unknown-field",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.7",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "unexpected": true
+    }
+  },
+  {
+    "name": "cdx-1.7-bad-format",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.7",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "timestamp": "yesterday"
+      }
+    }
+  },
+  {
+    "name": "cdx-1.7-bad-email",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.7",
+      "version": 1,
+      "components": [
+        {
+          "type": "library",
+          "name": "demo",
+          "bom-ref": "a",
+          "licenses": [
+            {
+              "license": {
+                "id": "MIT"
+              }
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "authors": [
+          {
+            "email": "no email"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "spdx-2.2",
+    "kind": "sbom",
+    "valid": true,
+    "input": {
+      "spdxVersion": "SPDX-2.2",
+      "SPDXID": "SPDXRef-DOCUMENT",
+      "name": "demo",
+      "dataLicense": "CC0-1.0",
+      "creationInfo": {
+        "created": "2026-11-01T00:00:00Z",
+        "creators": [
+          "Tool: SecuLens"
+        ]
+      },
+      "packages": []
+    }
+  },
+  {
+    "name": "spdx-2.2-bad-required",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "spdxVersion": "SPDX-2.2",
+      "SPDXID": "SPDXRef-DOCUMENT",
+      "name": "demo",
+      "creationInfo": {
+        "created": "2026-11-01T00:00:00Z",
+        "creators": [
+          "Tool: SecuLens"
+        ]
+      },
+      "packages": []
+    }
+  },
+  {
+    "name": "spdx-2.2-bad-object",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "spdxVersion": "SPDX-2.2",
+      "SPDXID": "SPDXRef-DOCUMENT",
+      "name": "demo",
+      "dataLicense": "CC0-1.0",
+      "creationInfo": [],
+      "packages": []
+    }
+  },
+  {
+    "name": "spdx-2.2-bad-package",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "spdxVersion": "SPDX-2.2",
+      "SPDXID": "SPDXRef-DOCUMENT",
+      "name": "demo",
+      "dataLicense": "CC0-1.0",
+      "creationInfo": {
+        "created": "2026-11-01T00:00:00Z",
+        "creators": [
+          "Tool: SecuLens"
+        ]
+      },
+      "packages": [
+        {
+          "name": "demo"
+        }
+      ]
+    }
+  },
+  {
+    "name": "spdx-2.3",
+    "kind": "sbom",
+    "valid": true,
+    "input": {
+      "spdxVersion": "SPDX-2.3",
+      "SPDXID": "SPDXRef-DOCUMENT",
+      "name": "demo",
+      "dataLicense": "CC0-1.0",
+      "creationInfo": {
+        "created": "2026-11-01T00:00:00Z",
+        "creators": [
+          "Tool: SecuLens"
+        ]
+      },
+      "packages": []
+    }
+  },
+  {
+    "name": "spdx-2.3-bad-required",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "spdxVersion": "SPDX-2.3",
+      "SPDXID": "SPDXRef-DOCUMENT",
+      "name": "demo",
+      "creationInfo": {
+        "created": "2026-11-01T00:00:00Z",
+        "creators": [
+          "Tool: SecuLens"
+        ]
+      },
+      "packages": []
+    }
+  },
+  {
+    "name": "spdx-2.3-bad-object",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "spdxVersion": "SPDX-2.3",
+      "SPDXID": "SPDXRef-DOCUMENT",
+      "name": "demo",
+      "dataLicense": "CC0-1.0",
+      "creationInfo": [],
+      "packages": []
+    }
+  },
+  {
+    "name": "spdx-2.3-bad-package",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "spdxVersion": "SPDX-2.3",
+      "SPDXID": "SPDXRef-DOCUMENT",
+      "name": "demo",
+      "dataLicense": "CC0-1.0",
+      "creationInfo": {
+        "created": "2026-11-01T00:00:00Z",
+        "creators": [
+          "Tool: SecuLens"
+        ]
+      },
+      "packages": [
+        {
+          "name": "demo"
+        }
+      ]
+    }
+  },
+  {
+    "name": "unsupported-0",
+    "kind": "sbom",
+    "valid": false,
+    "input": null
+  },
+  {
+    "name": "unsupported-1",
+    "kind": "sbom",
+    "valid": false,
+    "input": []
+  },
+  {
+    "name": "unsupported-2",
+    "kind": "sbom",
+    "valid": false,
+    "input": {}
+  },
+  {
+    "name": "unsupported-3",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "9"
+    }
+  },
+  {
+    "name": "unsupported-4",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "spdxVersion": "SPDX-3.0"
+    }
+  },
+  {
+    "name": "unsupported-5",
+    "kind": "sbom",
+    "valid": false,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": [
+        "1.6"
+      ]
+    }
+  },
+  {
+    "name": "cdx-empty-1.7",
+    "kind": "sbom",
+    "valid": true,
+    "input": {
+      "bomFormat": "CycloneDX",
+      "specVersion": "1.7"
+    }
+  }
+]

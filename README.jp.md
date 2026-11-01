@@ -83,6 +83,15 @@ SPDXの`AND`は全分岐の許可、`OR`はいずれかの選択肢の許可が�
 
 インポートと別名は構文から識別しますが、同名のローカル変数、動的な別名、データフロー、悪用可能性は解決しません。構文エラーは解析範囲の不足として記録します。仮想環境、依存関係・ビルドフォルダー、シンボリックリンクはスキップします。JS／TSソース解析には[TypeScript版](https://github.com/masahiroid/seculens)を使ってください。PHPソース解析には[独立したPHP版](https://github.com/masahiroid/seculens-php)を使ってください。
 
+## スキーマ検証
+
+```sh
+seculens validate sbom.json                 # SPDX 2.2/2.3 または CycloneDX 1.4〜1.7 JSON
+seculens validate report.json --kind report # SecuLens レポートスキーマ 1.1
+```
+
+同梱の公式スキーマ（`schemas/`、出典・ハッシュ・ライセンスはそのREADME参照）でオフライン検証します。出力はJSON `{valid, schema, errors[]}` です。終了コード `0` は妥当、`2` は不正・未対応バージョン・入力エラーです。構造と書式の検証のみで、SBOMの網羅性や検出結果の正しさは保証しません。
+
 ## 終了コードとAPI
 
 - `0`：検査完了。検出結果が存在する場合もあります。

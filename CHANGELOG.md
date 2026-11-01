@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+- Add `seculens validate` for offline JSON Schema validation of SPDX 2.2/2.3 and CycloneDX 1.4–1.7 SBOMs and SecuLens reports (`--kind report`).
+- Bundle the official upstream SPDX and CycloneDX schemas with source hashes and licenses, plus the cross-language report schema `report-1.1.schema.json`.
+- Export `validateDocument` / `validate_document` / `Validation::validate` from the library API.
+
 ## 1.1.0
 
 - Add lifecycle script detection (`SC-LIFECYCLE-SCRIPT`) in `package.json` and `package-lock.json`.

@@ -40,3 +40,9 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Internal AI agent notes (local only)
+AGENTS.md
+CLAUDE.md
+.claude/
+internal/

