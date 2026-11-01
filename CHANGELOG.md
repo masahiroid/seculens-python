@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+- Require Python 3.11 or later. Python 3.10 reached end of life in October 2026; installers on 3.10 keep resolving 1.2.0.
+
 ## 1.2.0
 
 - Add `seculens validate` for offline JSON Schema validation of SPDX 2.2/2.3 and CycloneDX 1.4–1.7 SBOMs and SecuLens reports (`--kind report`).

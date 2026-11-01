@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from .database import validate_database
@@ -42,9 +42,9 @@ def scan_sbom(
     policy = validate_policy({} if policy is None else policy)
     report: dict[str, Any] = {
         "schemaVersion": "1.1",
-        "tool": {"name": "SecuLens", "version": "1.2.0"},
+        "tool": {"name": "SecuLens", "version": "1.3.0"},
         "createdAt": created_at
-        or datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
+        or datetime.now(UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
         "customer": customer,
         "target": target,
         "sbomSha256": sha256(sbom_text),

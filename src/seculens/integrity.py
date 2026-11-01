@@ -5,7 +5,7 @@ from __future__ import annotations
 import base64
 import json
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -122,7 +122,7 @@ def check_package_cool_off(
     now: datetime | None = None,
 ) -> list[dict[str, Any]]:
     if now is None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
     findings: list[dict[str, Any]] = []
 
     pypi_components = [

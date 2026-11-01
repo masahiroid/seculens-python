@@ -11,7 +11,7 @@ from .sbom import compute_dependency_depths, parse_sbom
 from .validation import validate_document
 from .word import write_word_report
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __all__ = [
     "scan_sbom",
     "validate_document",

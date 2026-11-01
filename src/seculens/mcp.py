@@ -120,7 +120,7 @@ def handle_mcp_request(request: dict[str, Any]) -> dict[str, Any] | None:
             "result": {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}},
-                "serverInfo": {"name": "seculens-python", "version": "1.2.0"},
+                "serverInfo": {"name": "seculens-python", "version": "1.3.0"},
             },
         }
 

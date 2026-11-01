@@ -2,7 +2,7 @@
 
 [English](README.md) | [日本語](README.jp.md)
 
-SecuLensの独立したPython実装です。SPDX／CycloneDX JSONのSBOMをOSVの脆弱性情報と照合し、SPDXライセンス式のポリシー評価、PythonのAST解析、顧客提出用Word・JSONレポートの生成を行います。Python 3.10以降が必要です。Node.jsやTrivyの実行環境は不要です。
+SecuLensの独立したPython実装です。SPDX／CycloneDX JSONのSBOMをOSVの脆弱性情報と照合し、SPDXライセンス式のポリシー評価、PythonのAST解析、顧客提出用Word・JSONレポートの生成を行います。Python 3.11以降が必要です。Node.jsやTrivyの実行環境は不要です。
 
 初期リリースであり、完全なSASTや法令遵守の判定ではありません。脆弱性の一致は指定したデータベースに基づく根拠、ASTの検出は確認候補です。
 
