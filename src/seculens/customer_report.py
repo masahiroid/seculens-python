@@ -48,6 +48,7 @@ def ordered_findings(report: dict[str, Any]) -> list[dict[str, Any]]:
         report["findings"],
         key=lambda f: (
             list(CATEGORIES).index(f["category"]),
+            f.get("priority", {}).get("level", "P9"),
             LEVELS.index(severity_level(f)) if f["category"] == "vulnerability" else 0,
             f["subject"],
             f["ruleId"],
@@ -217,9 +218,9 @@ def front(
         marks={index + 1: level for index, level in enumerate(LEVELS)},
     )
     document.add_paragraph(
-        "重要度はCVSS 3.0／3.1の基本値、またはDB提供のラベルに基づきます。複数の根拠がある場合は最も高い重要度を採用し、詳細に根拠を残します。CVSS 2／4のベクトルは値を計算せず保存し、他に判定可能な根拠がなければ未評価とします。重要度は顧客環境での悪用可能性や事業影響を確定するものではありません。"
+        "重要度はCVSS 3.0／3.1／4.0のスコア、またはDB提供のラベルに基づきます。複数の根拠がある場合は最も高い重要度を採用し、詳細に根拠を残します。CVSS 2のベクトルは値を計算せず保存し、他に判定可能な根拠がなければ未評価とします。重要度は顧客環境での悪用可能性や事業影響を確定するものではありません。"
         if ja
-        else "Severity uses CVSS 3.0/3.1 base scores or database labels. The highest available severity is displayed when sources differ; all evidence is retained. CVSS 2/4 vectors are preserved but not calculated; absent other usable evidence they remain Unrated. Severity does not establish exploitability or business impact in the customer environment."
+        else "Severity uses CVSS 3.0/3.1/4.0 scores or database labels. The highest available severity is displayed when sources differ; all evidence is retained. CVSS 2 vectors are preserved but not calculated; absent other usable evidence they remain Unrated. Severity does not establish exploitability or business impact in the customer environment."
     )
     rows = [["分類" if ja else "Category", "件数" if ja else "Count"]] + [
         [names[0 if ja else 1], str(sum(f["category"] == category for f in findings))]
@@ -278,18 +279,24 @@ def front(
     document.add_heading("3 指摘事項の詳細" if ja else "3 Finding Details", 1)
 
 
+def _score_label(kind: str | None, ja: bool) -> str:
+    if kind == "CVSS_V4":
+        return "CVSS 4"
+    return "CVSS 3 基本値" if ja else "CVSS 3 base"
+
+
 def severity_detail(document: Any, finding: dict[str, Any], ja: bool) -> None:
     if finding["category"] != "vulnerability":
         return
     level = severity_level(finding)
     severity = finding.get("severity", {})
-    score = (
-        f" | CVSS 3 基本値 {severity['score']:.1f}"
-        if ja and "score" in severity
-        else f" | CVSS 3 base {severity['score']:.1f}"
-        if "score" in severity
-        else ""
-    )
+    score = ""
+    if "score" in severity:
+        kind = next(
+            (s["type"] for s in severity.get("sources", []) if s.get("score") == severity["score"]),
+            None,
+        )
+        score = f" | {_score_label(kind, ja)} {severity['score']:.1f}"
     paragraph = document.add_paragraph()
     run = paragraph.add_run(f"{'重要度' if ja else 'Severity'}  {label(finding, ja)}{score}")
     run.bold = True
@@ -304,7 +311,7 @@ def severity_detail(document: Any, finding: dict[str, Any], ja: bool) -> None:
     grouped: dict[str, list[str]] = {}
     for source in sources:
         value = (
-            (f"CVSS 3 基本値 {source['score']:.1f}" if ja else f"CVSS 3 base {source['score']:.1f}")
+            f"{_score_label(source['type'], ja)} {source['score']:.1f}"
             if "score" in source
             else (f"DB評価 {source['value']}" if ja else f"Database label {source['value']}")
             if source["type"] == "database_label"
@@ -317,3 +324,18 @@ def severity_detail(document: Any, finding: dict[str, Any], ja: bool) -> None:
         paragraph = document.add_paragraph(f"{record_id} | {' / '.join(values)}")
         for run in paragraph.runs:
             run.font.size = Pt(9)
+    priority = finding.get("priority")
+    if priority:
+        paragraph = document.add_paragraph()
+        run = paragraph.add_run(
+            f"{'優先度' if ja else 'Priority'}  {priority['level']} | "
+            f"{'基準' if ja else 'baseline'} {priority['baseline']}"
+        )
+        run.bold = True
+        for factor in priority["factors"]:
+            paragraph = document.add_paragraph(
+                f"{factor['factor']}: {factor['value']} ({factor['effect']:+d}) | "
+                f"{factor['justification']} | {factor['source']}"
+            )
+            for run in paragraph.runs:
+                run.font.size = Pt(9)

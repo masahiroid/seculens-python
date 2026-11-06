@@ -10,6 +10,7 @@ from typing import Any
 from .database import validate_database
 from .licenses import license_findings, validate_policy
 from .matcher import match_record, same_package, supported_version
+from .priority import apply_priorities
 from .sbom import parse_sbom
 from .severity import merge_severity, record_severity
 
@@ -17,6 +18,7 @@ LIMITATIONS = [
     "No match means no matching record in the supplied database snapshot, not absence of vulnerabilities.",
     "License policy checks are not a legal compliance determination.",
     "AST rules identify review candidates and complexity, not proven exploitability.",
+    "Priority combines advisory severity with customer-supplied context that SecuLens does not verify; it does not establish exploitability.",
     "SBOM content and package identifiers are supplied by the generating tool.",
     "Packagist matching follows Composer version normalization (up to four numeric parts and dev/alpha/beta/RC/stable/patch stability); branch versions such as dev-main or 1.x-dev are unassessed.",
 ]
@@ -41,8 +43,8 @@ def scan_sbom(
     validate_database(records)
     policy = validate_policy({} if policy is None else policy)
     report: dict[str, Any] = {
-        "schemaVersion": "1.1",
-        "tool": {"name": "SecuLens", "version": "1.4.0"},
+        "schemaVersion": "1.2",
+        "tool": {"name": "SecuLens", "version": "1.5.0"},
         "createdAt": created_at
         or datetime.now(UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
         "customer": customer,
@@ -160,5 +162,7 @@ def scan_sbom(
                 groups.pop(index)
                 changed = True
         groups.append(merged)
+    if "context" in policy:
+        apply_priorities(groups, sbom["components"], policy["context"])
     report["findings"] = sorted(groups, key=lambda f: (f["category"], f["subject"], f["ruleId"]))
     return report

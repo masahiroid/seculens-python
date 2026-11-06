@@ -1,0 +1,18 @@
+{
+  "allow": ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC"],
+  "deny": ["AGPL-3.0-only", "AGPL-3.0-or-later"],
+  "context": {
+    "defaults": {
+      "exposure": "internal",
+      "justification": "Runs on the private network"
+    },
+    "components": [
+      {
+        "name": "lodash",
+        "ecosystem": "npm",
+        "reachability": "not-reachable",
+        "justification": "Only used by build scripts"
+      }
+    ]
+  }
+}

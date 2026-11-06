@@ -2,16 +2,18 @@
 
 from .analysis import analyze, check_lifecycle_scripts
 from .core import scan_sbom, sha256
+from .cvss4 import cvss4_score
 from .database import fetch_database, validate_database
 from .integrity import check_lockfile_integrity, check_package_cool_off
 from .licenses import evaluate_license
 from .matcher import match_record
 from .mcp import MCP_TOOLS, handle_mcp_request, run_mcp_server
+from .priority import component_priority, validate_context
 from .sbom import compute_dependency_depths, parse_sbom
 from .validation import validate_document
 from .word import write_word_report
 
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 __all__ = [
     "scan_sbom",
     "validate_document",
@@ -20,6 +22,9 @@ __all__ = [
     "compute_dependency_depths",
     "match_record",
     "evaluate_license",
+    "cvss4_score",
+    "component_priority",
+    "validate_context",
     "fetch_database",
     "validate_database",
     "analyze",

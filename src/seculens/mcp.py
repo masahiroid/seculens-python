@@ -35,7 +35,7 @@ MCP_TOOLS = [
                 },
                 "policy": {
                     "type": "object",
-                    "description": "License policy with allow and/or deny lists",
+                    "description": "License policy with allow and/or deny lists and optional prioritization context",
                     "properties": {
                         "allow": {"type": "array", "items": {"type": "string"}},
                         "deny": {"type": "array", "items": {"type": "string"}},
@@ -120,7 +120,7 @@ def handle_mcp_request(request: dict[str, Any]) -> dict[str, Any] | None:
             "result": {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}},
-                "serverInfo": {"name": "seculens-python", "version": "1.4.0"},
+                "serverInfo": {"name": "seculens-python", "version": "1.5.0"},
             },
         }
 

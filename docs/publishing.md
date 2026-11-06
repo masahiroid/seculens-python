@@ -1,6 +1,6 @@
 # PyPI trusted publishing
 
-SecuLens 0.3.1 is published at https://pypi.org/project/seculens/ . The active trusted publisher uses the following GitHub configuration:
+SecuLens is published at https://pypi.org/project/seculens/ . The active trusted publisher uses the following GitHub configuration:
 
 - PyPI project name: `seculens`
 - GitHub owner: `masahiroid`

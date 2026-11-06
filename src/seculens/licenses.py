@@ -6,6 +6,8 @@ from typing import Any
 
 from license_expression import AND, OR, ExpressionError, get_spdx_licensing
 
+from .priority import validate_context
+
 _LICENSING = get_spdx_licensing()
 
 
@@ -17,6 +19,8 @@ def validate_policy(policy: Any) -> dict[str, Any]:
             not isinstance(policy[key], list) or any(not isinstance(x, str) for x in policy[key])
         ):
             raise ValueError("Policy allow/deny must be string arrays")
+    if "context" in policy:
+        validate_context(policy["context"])
     return policy
 
 

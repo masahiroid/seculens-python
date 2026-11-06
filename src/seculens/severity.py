@@ -1,4 +1,4 @@
-"""Traceable advisory severity; CVSS 3.0/3.1 base scores only."""
+"""Traceable advisory severity; CVSS 3.0/3.1 base scores and CVSS 4.0 scores."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import json
 import math
 from typing import Any
 
+from .cvss4 import cvss4_score
 from .matcher import match_record, same_package
 
 LEVELS = ("critical", "high", "medium", "low", "none", "unknown")
@@ -116,7 +117,14 @@ def record_severity(record: dict[str, Any], component: dict[str, Any]) -> dict[s
         for index, entry in enumerate(items):
             if not isinstance(entry, dict) or not isinstance(entry.get("score"), str):
                 continue
-            score = cvss3_base(entry["score"]) if entry.get("type") == "CVSS_V3" else None
+            kind = entry.get("type")
+            score = (
+                cvss3_base(entry["score"])
+                if kind == "CVSS_V3"
+                else cvss4_score(entry["score"])
+                if kind == "CVSS_V4"
+                else None
+            )
             source: dict[str, Any] = {
                 "recordId": record["id"],
                 "field": f"{field}[{index}]",
