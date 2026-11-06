@@ -43,6 +43,7 @@ _TRANSLATIONS = {
     "Consider simplifying the function and adding focused tests.": "関数の分割や簡素化を検討し、分岐に対応したテストを追加してください。",
     "Confirm the license, usage and distribution conditions against the customer policy.": "ライセンスと利用・配布条件を確認し、顧客のポリシーに照らして判断してください。",
     "No match means no matching record in the supplied database snapshot, not absence of vulnerabilities.": "照合なしは使用したDB内に該当情報がないことを示し、脆弱性が存在しないことを保証しません。",
+    "Priority combines advisory severity with customer-supplied context that SecuLens does not verify; it does not establish exploitability.": "優先度は、アドバイザリの重要度に顧客が申告した状況を組み合わせたものです。SecuLensは申告内容を検証せず、悪用可能性を確定するものでもありません。",
     "License policy checks are not a legal compliance determination.": "ライセンスポリシー評価は法的な適合性の確定を行うものではありません。",
     "AST rules identify review candidates and complexity, not proven exploitability.": "AST検査は要確認のコードや複雑性を抽出します。悪用可能性を立証するものではありません。",
     "SBOM content and package identifiers are supplied by the generating tool.": "構成部品の一覧と識別情報は、SBOM生成ツールから取得した情報に依存します。",

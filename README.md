@@ -74,6 +74,32 @@ seculens sbom ./project --format spdx --output bom.spdx.json
 
 SPDX `AND` requires all branches to be allowed; `OR` accepts an allowed option. `WITH` exceptions require an exact policy entry. Unrecognized or missing expressions require review. This evaluates the configured policy, not every legal obligation or regulatory framework.
 
+## Prioritization
+
+Add an optional `context` to the policy file to rank vulnerabilities for one environment. Without it, reports have no priority. Severity and CVSS scores never change.
+
+```json
+{
+  "allow": ["MIT"],
+  "context": {
+    "defaults": { "exposure": "internal", "justification": "Runs on the private network" },
+    "components": [
+      { "name": "lodash", "ecosystem": "npm", "reachability": "not-reachable", "justification": "Only used by build scripts" }
+    ]
+  }
+}
+```
+
+Each finding starts from a baseline: Critical is P1, High and Unrated are P2, Medium is P3, Low and None are P4. Each stated factor then moves it one level, within P1 to P4. None stays P4.
+
+| Factor | Raises | No change | Lowers |
+|---|---|---|---|
+| `exposure` | `internet` | `internal` | `isolated` |
+| `reachability` | `reachable` | `unknown` | `not-reachable` |
+| `criticality` | `high` | `medium` | `low` |
+
+The first `components` entry that matches the package name (and `ecosystem`, if given) and states a factor wins; otherwise `defaults` applies. Every entry requires a `justification`. Each finding records the factors used, their effect, source and justification in `priority`, and the Word report shows them. SecuLens does not verify these statements, so a priority does not establish exploitability.
+
 ## Python analysis
 
 `--source` parses `.py` files without importing or executing them. Rules review `eval` / `exec`, OS shell calls, `subprocess` with literal `shell=True`, pickle deserialization and YAML loading without an explicit safe loader. Complexity review triggers above cyclomatic 10 or nesting 4. Imports and aliases are recognized syntactically; shadowing, dynamic aliases, data flow and exploitability are not resolved. Syntax errors become coverage findings. Virtual environments, dependency/build directories and symlinks are skipped. JS/TS source analysis belongs to the [TypeScript implementation](https://github.com/masahiroid/seculens); PHP source analysis is available in the [independent PHP implementation](https://github.com/masahiroid/seculens-php).
@@ -130,9 +156,9 @@ seculens scan bom.json --db database.json --policy policy.json \
 
 Severity colors: Critical / High red, Medium amber, Low blue, None green, Unrated gray. Labels accompany colors for accessibility. Vulnerability counts consolidate aliases per component; category counts include review candidates. CVSS zero / None is a severity band, not proof of absence of vulnerabilities.
 
-Severity comes from validated CVSS 3.0/3.1 base vectors or recognized `database_specific.severity` labels. Package-specific OSV `affected.severity` overrides global vectors for that affected entry. Alias consolidation preserves all provenance and displays the highest supported severity; when sources disagree, the underlying labels/vectors and scores remain available in JSON. CVSS 2/4 vectors and malformed vectors are not calculated. Without other usable metadata these stay Unrated. No severity is inferred from advisory wording, AST review candidates or licenses.
+Severity comes from validated CVSS 3.0/3.1 base vectors, CVSS 4.0 vectors or recognized `database_specific.severity` labels. Package-specific OSV `affected.severity` overrides global vectors for that affected entry. Alias consolidation preserves all provenance and displays the highest supported severity; when sources disagree, the underlying labels/vectors and scores remain available in JSON. CVSS 2 vectors and malformed vectors are not calculated. Without other usable metadata these stay Unrated. No severity is inferred from advisory wording, AST review candidates or licenses.
 
-Report JSON schema 1.1 adds optional vulnerability `severity` (level, optional base score, and source record IDs / field paths / raw values) and optional CLI `sourceAnalysis` execution metadata. Presentation sorting does not alter the assessment JSON. Word contains concise severity attribution; full original metadata and references stay in JSON. This mode changes presentation and adds severity evidence, not the vulnerability matching criteria.
+Report JSON schema 1.2 adds optional `priority` to findings. Schema 1.1 added optional vulnerability `severity` (level, optional base score, and source record IDs / field paths / raw values) and optional CLI `sourceAnalysis` execution metadata. Presentation sorting does not alter the assessment JSON. Word contains concise severity attribution; full original metadata and references stay in JSON. This mode changes presentation and adds severity evidence, not the vulnerability matching criteria.
 
 Scoring reference: https://www.first.org/cvss/v3.1/specification-document
 OSV field reference: https://ossf.github.io/osv-schema/

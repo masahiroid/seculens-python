@@ -1,0 +1,479 @@
+{
+ "cases": [
+  {
+   "name": "baseline only",
+   "severity": "high",
+   "component": {
+    "name": "x",
+    "ecosystem": "npm"
+   },
+   "context": {},
+   "expected": {
+    "level": "P2",
+    "baseline": "P2",
+    "factors": []
+   }
+  },
+  {
+   "name": "unrated ranks with high",
+   "severity": "unknown",
+   "component": {
+    "name": "x"
+   },
+   "context": {},
+   "expected": {
+    "level": "P2",
+    "baseline": "P2",
+    "factors": []
+   }
+  },
+  {
+   "name": "defaults apply with zero effect",
+   "severity": "medium",
+   "component": {
+    "name": "x",
+    "ecosystem": "npm"
+   },
+   "context": {
+    "defaults": {
+     "exposure": "internal",
+     "justification": "asserted by security team"
+    },
+    "components": [
+     {
+      "name": "web",
+      "ecosystem": "npm",
+      "exposure": "internet",
+      "reachability": "reachable",
+      "justification": "public API imports it"
+     },
+     {
+      "name": "tool",
+      "reachability": "not-reachable",
+      "criticality": "low",
+      "justification": "build-time only"
+     }
+    ]
+   },
+   "expected": {
+    "level": "P3",
+    "baseline": "P3",
+    "factors": [
+     {
+      "factor": "exposure",
+      "value": "internal",
+      "effect": 0,
+      "source": "context.defaults",
+      "justification": "asserted by security team"
+     }
+    ]
+   }
+  },
+  {
+   "name": "raises and clamps at P1",
+   "severity": "high",
+   "component": {
+    "name": "web",
+    "ecosystem": "npm"
+   },
+   "context": {
+    "defaults": {
+     "exposure": "internal",
+     "justification": "asserted by security team"
+    },
+    "components": [
+     {
+      "name": "web",
+      "ecosystem": "npm",
+      "exposure": "internet",
+      "reachability": "reachable",
+      "justification": "public API imports it"
+     },
+     {
+      "name": "tool",
+      "reachability": "not-reachable",
+      "criticality": "low",
+      "justification": "build-time only"
+     }
+    ]
+   },
+   "expected": {
+    "level": "P1",
+    "baseline": "P2",
+    "factors": [
+     {
+      "factor": "exposure",
+      "value": "internet",
+      "effect": 1,
+      "source": "context.components[0]",
+      "justification": "public API imports it"
+     },
+     {
+      "factor": "reachability",
+      "value": "reachable",
+      "effect": 1,
+      "source": "context.components[0]",
+      "justification": "public API imports it"
+     }
+    ]
+   }
+  },
+  {
+   "name": "ecosystem must match",
+   "severity": "medium",
+   "component": {
+    "name": "web",
+    "ecosystem": "PyPI"
+   },
+   "context": {
+    "defaults": {
+     "exposure": "internal",
+     "justification": "asserted by security team"
+    },
+    "components": [
+     {
+      "name": "web",
+      "ecosystem": "npm",
+      "exposure": "internet",
+      "reachability": "reachable",
+      "justification": "public API imports it"
+     },
+     {
+      "name": "tool",
+      "reachability": "not-reachable",
+      "criticality": "low",
+      "justification": "build-time only"
+     }
+    ]
+   },
+   "expected": {
+    "level": "P3",
+    "baseline": "P3",
+    "factors": [
+     {
+      "factor": "exposure",
+      "value": "internal",
+      "effect": 0,
+      "source": "context.defaults",
+      "justification": "asserted by security team"
+     }
+    ]
+   }
+  },
+  {
+   "name": "lowers critical with recorded reason",
+   "severity": "critical",
+   "component": {
+    "name": "tool",
+    "ecosystem": "PyPI"
+   },
+   "context": {
+    "defaults": {
+     "exposure": "internal",
+     "justification": "asserted by security team"
+    },
+    "components": [
+     {
+      "name": "web",
+      "ecosystem": "npm",
+      "exposure": "internet",
+      "reachability": "reachable",
+      "justification": "public API imports it"
+     },
+     {
+      "name": "tool",
+      "reachability": "not-reachable",
+      "criticality": "low",
+      "justification": "build-time only"
+     }
+    ]
+   },
+   "expected": {
+    "level": "P3",
+    "baseline": "P1",
+    "factors": [
+     {
+      "factor": "exposure",
+      "value": "internal",
+      "effect": 0,
+      "source": "context.defaults",
+      "justification": "asserted by security team"
+     },
+     {
+      "factor": "reachability",
+      "value": "not-reachable",
+      "effect": -1,
+      "source": "context.components[1]",
+      "justification": "build-time only"
+     },
+     {
+      "factor": "criticality",
+      "value": "low",
+      "effect": -1,
+      "source": "context.components[1]",
+      "justification": "build-time only"
+     }
+    ]
+   }
+  },
+  {
+   "name": "clamps at P4",
+   "severity": "low",
+   "component": {
+    "name": "tool"
+   },
+   "context": {
+    "defaults": {
+     "exposure": "internal",
+     "justification": "asserted by security team"
+    },
+    "components": [
+     {
+      "name": "web",
+      "ecosystem": "npm",
+      "exposure": "internet",
+      "reachability": "reachable",
+      "justification": "public API imports it"
+     },
+     {
+      "name": "tool",
+      "reachability": "not-reachable",
+      "criticality": "low",
+      "justification": "build-time only"
+     }
+    ]
+   },
+   "expected": {
+    "level": "P4",
+    "baseline": "P4",
+    "factors": [
+     {
+      "factor": "exposure",
+      "value": "internal",
+      "effect": 0,
+      "source": "context.defaults",
+      "justification": "asserted by security team"
+     },
+     {
+      "factor": "reachability",
+      "value": "not-reachable",
+      "effect": -1,
+      "source": "context.components[1]",
+      "justification": "build-time only"
+     },
+     {
+      "factor": "criticality",
+      "value": "low",
+      "effect": -1,
+      "source": "context.components[1]",
+      "justification": "build-time only"
+     }
+    ]
+   }
+  },
+  {
+   "name": "none cannot be raised",
+   "severity": "none",
+   "component": {
+    "name": "web",
+    "ecosystem": "npm"
+   },
+   "context": {
+    "defaults": {
+     "exposure": "internal",
+     "justification": "asserted by security team"
+    },
+    "components": [
+     {
+      "name": "web",
+      "ecosystem": "npm",
+      "exposure": "internet",
+      "reachability": "reachable",
+      "justification": "public API imports it"
+     },
+     {
+      "name": "tool",
+      "reachability": "not-reachable",
+      "criticality": "low",
+      "justification": "build-time only"
+     }
+    ]
+   },
+   "expected": {
+    "level": "P4",
+    "baseline": "P4",
+    "factors": [
+     {
+      "factor": "exposure",
+      "value": "internet",
+      "effect": 1,
+      "source": "context.components[0]",
+      "justification": "public API imports it"
+     },
+     {
+      "factor": "reachability",
+      "value": "reachable",
+      "effect": 1,
+      "source": "context.components[0]",
+      "justification": "public API imports it"
+     }
+    ]
+   }
+  }
+ ],
+ "invalidContexts": [
+  "x",
+  null,
+  {
+   "foo": 1
+  },
+  {
+   "defaults": {
+    "exposure": "internet"
+   }
+  },
+  {
+   "defaults": {
+    "exposure": "space",
+    "justification": "x"
+   }
+  },
+  {
+   "defaults": {
+    "exposure": "internet",
+    "justification": " "
+   }
+  },
+  {
+   "defaults": {
+    "justification": "x"
+   }
+  },
+  {
+   "defaults": {
+    "exposure": "internet",
+    "justification": "x",
+    "extra": 1
+   }
+  },
+  {
+   "components": "x"
+  },
+  {
+   "components": [
+    {
+     "exposure": "internet",
+     "justification": "x"
+    }
+   ]
+  },
+  {
+   "components": [
+    {
+     "name": "a",
+     "justification": "x"
+    }
+   ]
+  },
+  {
+   "components": [
+    {
+     "name": "a",
+     "ecosystem": "go",
+     "exposure": "internet",
+     "justification": "x"
+    }
+   ]
+  }
+ ],
+ "scan": {
+  "sbom": {
+   "bomFormat": "CycloneDX",
+   "specVersion": "1.6",
+   "version": 1,
+   "components": [
+    {
+     "type": "library",
+     "name": "demo",
+     "version": "1.0.0",
+     "bom-ref": "demo",
+     "purl": "pkg:npm/demo@1.0.0",
+     "licenses": [
+      {
+       "license": {
+        "id": "MIT"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "records": [
+   {
+    "id": "GHSA-demo",
+    "summary": "demo",
+    "affected": [
+     {
+      "package": {
+       "name": "demo",
+       "ecosystem": "npm"
+      },
+      "versions": [
+       "1.0.0"
+      ]
+     }
+    ],
+    "severity": [
+     {
+      "type": "CVSS_V4",
+      "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+     }
+    ]
+   }
+  ],
+  "policy": {
+   "allow": [
+    "MIT"
+   ],
+   "context": {
+    "defaults": {
+     "exposure": "internal",
+     "justification": "asserted by security team"
+    },
+    "components": [
+     {
+      "name": "demo",
+      "reachability": "not-reachable",
+      "justification": "not imported"
+     }
+    ]
+   }
+  },
+  "expected": {
+   "severity": {
+    "level": "critical",
+    "score": 9.3
+   },
+   "priority": {
+    "level": "P2",
+    "baseline": "P1",
+    "factors": [
+     {
+      "factor": "exposure",
+      "value": "internal",
+      "effect": 0,
+      "source": "context.defaults",
+      "justification": "asserted by security team"
+     },
+     {
+      "factor": "reachability",
+      "value": "not-reachable",
+      "effect": -1,
+      "source": "context.components[0]",
+      "justification": "not imported"
+     }
+    ]
+   }
+  }
+ }
+}

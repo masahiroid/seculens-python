@@ -1,0 +1,482 @@
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.2"
+    },
+    "tool": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "const": "SecuLens"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "customer": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string"
+    },
+    "sbomSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "database": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "source",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "sbom": {
+      "$ref": "#/definitions/sbom"
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/check"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/finding"
+      }
+    },
+    "sourceAnalysis": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "enum": [
+            "Python",
+            "JavaScript/TypeScript",
+            "PHP"
+          ]
+        },
+        "target": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "language",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "tool",
+    "createdAt",
+    "customer",
+    "target",
+    "sbomSha256",
+    "database",
+    "sbom",
+    "checks",
+    "findings",
+    "limitations"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://seculens.dev/schemas/report-1.2.schema.json",
+  "title": "SecuLens assessment report 1.2",
+  "definitions": {
+    "component": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ecosystem": {
+          "enum": [
+            "npm",
+            "PyPI",
+            "Packagist"
+          ]
+        },
+        "licenses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hashes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "alg": {
+                "type": "string",
+                "minLength": 1
+              },
+              "content": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "alg",
+              "content"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "licenses"
+      ],
+      "additionalProperties": false
+    },
+    "finding": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "enum": [
+            "vulnerability",
+            "license",
+            "security",
+            "quality",
+            "coverage"
+          ]
+        },
+        "ruleId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "affected",
+            "review",
+            "denied",
+            "unassessed"
+          ]
+        },
+        "summary": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "recommendation": {
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/definitions/severity"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "file": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "priority": {
+          "$ref": "#/definitions/priority"
+        }
+      },
+      "required": [
+        "category",
+        "ruleId",
+        "subject",
+        "status",
+        "summary",
+        "evidence",
+        "recommendation"
+      ],
+      "additionalProperties": false
+    },
+    "severity": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low",
+            "none",
+            "unknown"
+          ]
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/severitySource"
+          }
+        }
+      },
+      "required": [
+        "level",
+        "sources"
+      ],
+      "additionalProperties": false
+    },
+    "severitySource": {
+      "type": "object",
+      "properties": {
+        "recordId": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "level": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low",
+            "none",
+            "unknown"
+          ]
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        }
+      },
+      "required": [
+        "recordId",
+        "field",
+        "type",
+        "value",
+        "level"
+      ],
+      "additionalProperties": false
+    },
+    "sbom": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "enum": [
+            "SPDX",
+            "CycloneDX"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/component"
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "minLength": 1
+              },
+              "to": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "format",
+        "version",
+        "components",
+        "dependencies",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "check": {
+      "type": "object",
+      "properties": {
+        "componentId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "matched",
+            "no-match",
+            "unassessed"
+          ]
+        },
+        "recordsChecked": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "componentId",
+        "status",
+        "recordsChecked"
+      ],
+      "additionalProperties": false
+    },
+    "priority": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "enum": [
+            "P1",
+            "P2",
+            "P3",
+            "P4"
+          ]
+        },
+        "baseline": {
+          "enum": [
+            "P1",
+            "P2",
+            "P3",
+            "P4"
+          ]
+        },
+        "factors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/priorityFactor"
+          }
+        }
+      },
+      "required": [
+        "level",
+        "baseline",
+        "factors"
+      ],
+      "additionalProperties": false
+    },
+    "priorityFactor": {
+      "type": "object",
+      "properties": {
+        "factor": {
+          "enum": [
+            "exposure",
+            "reachability",
+            "criticality"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effect": {
+          "enum": [
+            -1,
+            0,
+            1
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "justification": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "factor",
+        "value",
+        "effect",
+        "source",
+        "justification"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

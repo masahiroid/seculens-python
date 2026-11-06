@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.0
+
+- Calculate CVSS 4.0 scores from `CVSS_V4` vectors using FIRST's published tables. Advisories with only a CVSS 4 vector are no longer Unrated.
+- Add optional customer-context prioritization (P1 to P4) through `context` in the policy file. Severity is unchanged, and each finding records the factors, effects, sources and justifications behind its priority.
+- Report schema 1.2 adds `priority` to findings. `seculens validate --kind report` still accepts schema 1.1 reports.
+- Word reports list higher priorities first and show the priority evidence.
+
 ## 1.4.0
 
 - Packagist matching now follows Composer version normalization: one to four numeric parts (e.g. `5.4.0.1`), build metadata ignored, and stability order dev < alpha < beta < RC < stable < patch (`a`, `b`, `pl`, `p` aliases and `-dev` suffixes included).
