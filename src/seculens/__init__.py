@@ -13,7 +13,7 @@ from .sbom import compute_dependency_depths, parse_sbom
 from .validation import validate_document
 from .word import write_word_report
 
-__version__ = "1.5.0"
+__version__ = "1.5.1"
 __all__ = [
     "scan_sbom",
     "validate_document",

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.1
+
+- Version aligned with the TypeScript and PHP 1.5.1 bug fix releases. No change to findings or report output.
+
 ## 1.5.0
 
 - Calculate CVSS 4.0 scores from `CVSS_V4` vectors using FIRST's published tables. Advisories with only a CVSS 4 vector are no longer Unrated.
