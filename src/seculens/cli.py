@@ -13,12 +13,19 @@ from pathlib import Path
 from .analysis import analyze
 from .core import scan_sbom, sha256
 from .database import fetch_database, validate_database
-from .integrity import check_lockfile_integrity, check_package_cool_off
+from .integrity import check_lockfile_integrity, check_package_cool_off, parse_cool_off_days
 from .mcp import run_mcp_server
 from .sbom import parse_sbom
 from .validation import validate_document
 from .wizard import wizard
 from .word import write_word_report
+
+
+def _cool_off_days(value: str) -> int:
+    try:
+        return parse_cool_off_days(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
 
 
 def _json(text: str):
@@ -37,7 +44,7 @@ def _main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="seculens", description="SBOM assessment and evidence-based customer reports"
     )
-    parser.add_argument("--version", action="version", version="1.5.1")
+    parser.add_argument("--version", action="version", version="1.6.0")
     commands = parser.add_subparsers(dest="command", required=True)
     interactive = commands.add_parser("wizard", help="Interactive setup in English or Japanese")
     interactive.add_argument("--lang", choices=("en", "ja"))
@@ -61,9 +68,12 @@ def _main(argv: list[str] | None = None) -> int:
     scan.add_argument("--source", type=Path, help="Run Python AST review rules")
     scan.add_argument(
         "--cool-off",
-        type=int,
+        type=_cool_off_days,
         metavar="DAYS",
-        help="Flag packages released within the last N days (cool-off period)",
+        help=(
+            "Flag npm, PyPI and Packagist releases younger than N days (1-3650); "
+            "sends package names/versions to those registries"
+        ),
     )
     scan.add_argument("--customer", default="Customer")
     scan.add_argument("--target", help="Human-readable system or project name")
@@ -148,7 +158,7 @@ def _main(argv: list[str] | None = None) -> int:
             report["sourceAnalysis"] = {"language": "Python", "target": opts.source.resolve().name}
         else:
             report["findings"].extend(check_lockfile_integrity(opts.sbom.parent, parsed))
-        if opts.cool_off:
+        if opts.cool_off is not None:
             report["findings"].extend(
                 check_package_cool_off(parsed["components"], min_days=opts.cool_off)
             )

@@ -10,6 +10,7 @@ from typing import Any
 from .analysis import analyze
 from .core import scan_sbom, sha256
 from .database import fetch_database, validate_database
+from .integrity import check_lockfile_integrity, check_package_cool_off, parse_cool_off_days
 from .licenses import evaluate_license
 from .sbom import parse_sbom
 from .word import write_word_report
@@ -40,6 +41,22 @@ MCP_TOOLS = [
                         "allow": {"type": "array", "items": {"type": "string"}},
                         "deny": {"type": "array", "items": {"type": "string"}},
                     },
+                },
+                "lockfileDir": {
+                    "type": "string",
+                    "description": (
+                        "Directory with package-lock.json or composer.lock to check for integrity "
+                        "(default: the SBOM's directory)"
+                    ),
+                },
+                "coolOffDays": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3650,
+                    "description": (
+                        "Flag npm, PyPI and Packagist releases younger than this many days; "
+                        "sends package names/versions to those registries"
+                    ),
                 },
             },
             "required": ["sbomPath"],
@@ -120,7 +137,7 @@ def handle_mcp_request(request: dict[str, Any]) -> dict[str, Any] | None:
             "result": {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}},
-                "serverInfo": {"name": "seculens-python", "version": "1.5.1"},
+                "serverInfo": {"name": "seculens-python", "version": "1.6.0"},
             },
         }
 
@@ -139,6 +156,8 @@ def handle_mcp_request(request: dict[str, Any]) -> dict[str, Any] | None:
         try:
             content_text = ""
             if name == "seculens_scan":
+                cool_off = args.get("coolOffDays")
+                cool_off_days = None if cool_off is None else parse_cool_off_days(cool_off)
                 sbom_path = Path(args["sbomPath"]).resolve()
                 raw = sbom_path.read_text(encoding="utf-8")
                 sbom = parse_sbom(json.loads(raw))
@@ -163,6 +182,14 @@ def handle_mcp_request(request: dict[str, Any]) -> dict[str, Any] | None:
                     database_hash=db_hash,
                     policy=policy,
                 )
+                lockfile_dir = (
+                    Path(args["lockfileDir"]) if args.get("lockfileDir") else sbom_path.parent
+                )
+                report["findings"].extend(check_lockfile_integrity(lockfile_dir, sbom))
+                if cool_off_days is not None:
+                    report["findings"].extend(
+                        check_package_cool_off(sbom["components"], cool_off_days)
+                    )
                 affected_vulns = sum(
                     1
                     for f in report["findings"]
