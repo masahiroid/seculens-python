@@ -11,3 +11,7 @@ Advisory IDs and aliases are merged transitively per component. No CVSS severity
 Offline mode saves the exact supplied SBOM and database text. OSV mode saves the fetched candidate records and performs version comparison locally, rather than trusting version-filtered remote matches. SPDX license obligations beyond the configured allow/deny policy are not determined.
 
 See the README customer report mode section for severity evidence and layout options.
+
+## Supply-chain checks
+
+Lockfile integrity (`package-lock.json`, `composer.lock`) runs on every scan without network access. `--cool-off` looks up release dates for npm, PyPI and Packagist components and evaluates them with a pure function, so the decision is tested offline against the shared `supply-chain.json` fixture, which all three implementations must reproduce field for field. Failed lookups produce no finding.

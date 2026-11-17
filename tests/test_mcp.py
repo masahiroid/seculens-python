@@ -78,3 +78,40 @@ def test_mcp_scan_offline():
     assert res["id"] == 4
     assert res["result"]["isError"] is False
     assert '"components":' in res["result"]["content"][0]["text"]
+
+
+def test_mcp_scan_lockfile_dir_and_invalid_cool_off(tmp_path):
+    import json
+
+    (tmp_path / "composer.lock").write_text(
+        json.dumps(
+            {"packages": [{"name": "acme/http", "dist": {"url": "http://mirror.example/a.zip"}}]}
+        )
+    )
+
+    def call(**extra):
+        return handle_mcp_request(
+            {
+                "jsonrpc": "2.0",
+                "id": 9,
+                "method": "tools/call",
+                "params": {
+                    "name": "seculens_scan",
+                    "arguments": {
+                        "sbomPath": str(ROOT / "examples/cyclonedx.json"),
+                        "dbPath": str(ROOT / "examples/database.json"),
+                        "lockfileDir": str(tmp_path),
+                        **extra,
+                    },
+                },
+            }
+        )
+
+    ok = call()
+    assert ok["result"]["isError"] is False
+    findings = json.loads(ok["result"]["content"][0]["text"])["findings"]
+    assert any(f["ruleId"] == "SC-INSECURE-REGISTRY-URL" for f in findings)
+    for days in (0, 1.5, "x"):
+        bad = call(coolOffDays=days)
+        assert bad["result"]["isError"] is True
+        assert "Cool-off must be a whole number" in bad["result"]["content"][0]["text"]

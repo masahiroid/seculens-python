@@ -1,0 +1,494 @@
+{
+  "integrity": [
+    {
+      "name": "no lockfiles",
+      "files": {},
+      "components": [],
+      "expected": []
+    },
+    {
+      "name": "insecure npm resolution, root entry ignored, scoped and nested names",
+      "files": {
+        "package-lock.json": {
+          "packages": {
+            "": {
+              "name": "app",
+              "resolved": "http://ignored.example/app.tgz"
+            },
+            "node_modules/insecure-lib": {
+              "version": "1.0.0",
+              "resolved": "http://evil-mirror.example/insecure-lib-1.0.0.tgz"
+            },
+            "node_modules/@scope/pkg": {
+              "version": "2.0.0",
+              "resolved": "http://evil-mirror.example/@scope/pkg-2.0.0.tgz"
+            },
+            "node_modules/a/node_modules/b": {
+              "version": "3.0.0",
+              "resolved": "http://evil-mirror.example/b-3.0.0.tgz"
+            },
+            "node_modules/safe": {
+              "version": "1.0.0",
+              "resolved": "https://registry.npmjs.org/safe/-/safe-1.0.0.tgz"
+            }
+          }
+        }
+      },
+      "components": [],
+      "expected": [
+        {
+          "category": "security",
+          "ruleId": "SC-INSECURE-REGISTRY-URL",
+          "subject": "insecure-lib",
+          "status": "review",
+          "summary": "Insecure HTTP package resolution URL: insecure-lib",
+          "evidence": "resolved: \"http://evil-mirror.example/insecure-lib-1.0.0.tgz\"",
+          "recommendation": "Replace HTTP package sources with secure HTTPS registries to prevent man-in-the-middle attacks.",
+          "file": "package-lock.json"
+        },
+        {
+          "category": "security",
+          "ruleId": "SC-INSECURE-REGISTRY-URL",
+          "subject": "@scope/pkg",
+          "status": "review",
+          "summary": "Insecure HTTP package resolution URL: @scope/pkg",
+          "evidence": "resolved: \"http://evil-mirror.example/@scope/pkg-2.0.0.tgz\"",
+          "recommendation": "Replace HTTP package sources with secure HTTPS registries to prevent man-in-the-middle attacks.",
+          "file": "package-lock.json"
+        },
+        {
+          "category": "security",
+          "ruleId": "SC-INSECURE-REGISTRY-URL",
+          "subject": "b",
+          "status": "review",
+          "summary": "Insecure HTTP package resolution URL: b",
+          "evidence": "resolved: \"http://evil-mirror.example/b-3.0.0.tgz\"",
+          "recommendation": "Replace HTTP package sources with secure HTTPS registries to prevent man-in-the-middle attacks.",
+          "file": "package-lock.json"
+        }
+      ]
+    },
+    {
+      "name": "integrity mismatch",
+      "files": {
+        "package-lock.json": {
+          "packages": {
+            "node_modules/tampered-pkg": {
+              "version": "2.0.0",
+              "integrity": "sha512-LOCKFILEFAKE/HASH+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+            }
+          }
+        }
+      },
+      "components": [
+        {
+          "name": "tampered-pkg",
+          "version": "2.0.0",
+          "ecosystem": "npm",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "SBOM/GENUINE+HASHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=="
+            }
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "category": "security",
+          "ruleId": "SC-INTEGRITY-MISMATCH",
+          "subject": "tampered-pkg",
+          "status": "review",
+          "summary": "Lockfile integrity hash mismatch for tampered-pkg@2.0.0",
+          "evidence": "lockfile: \"sha512-LOCKFILEFAKE/HASH+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==\"; SBOM hashes: [{\"alg\":\"SHA-512\",\"content\":\"SBOM/GENUINE+HASHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB==\"}]",
+          "recommendation": "Investigate possible package tampering or lockfile poisoning before installing or deploying.",
+          "file": "package-lock.json"
+        }
+      ]
+    },
+    {
+      "name": "integrity matches hex, base64 and normalized algorithm names",
+      "files": {
+        "package-lock.json": {
+          "packages": {
+            "node_modules/hex": {
+              "version": "1.0.0",
+              "integrity": "sha512-8Z+uYlt1PsC+2DJfRpoUVPW90eyxdXM5HBL1VXFIcPGA+kV6ckzsBuJj9BjkaBqwvSYPk/eWEVZmXHPik3KSEg=="
+            },
+            "node_modules/b64": {
+              "version": "1.0.0",
+              "integrity": "sha512-8Z+uYlt1PsC+2DJfRpoUVPW90eyxdXM5HBL1VXFIcPGA+kV6ckzsBuJj9BjkaBqwvSYPk/eWEVZmXHPik3KSEg=="
+            },
+            "node_modules/under": {
+              "version": "1.0.0",
+              "integrity": "sha512-8Z+uYlt1PsC+2DJfRpoUVPW90eyxdXM5HBL1VXFIcPGA+kV6ckzsBuJj9BjkaBqwvSYPk/eWEVZmXHPik3KSEg=="
+            }
+          }
+        }
+      },
+      "components": [
+        {
+          "name": "hex",
+          "version": "1.0.0",
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "00"
+            },
+            {
+              "alg": "SHA-512",
+              "content": "F19FAE625B753EC0BED8325F469A1454F5BDD1ECB17573391C12F555714870F180FA457A724CEC06E263F418E4681AB0BD260F93F7961156665C73E293729212"
+            }
+          ]
+        },
+        {
+          "name": "b64",
+          "version": "1.0.0",
+          "hashes": [
+            {
+              "alg": "sha512",
+              "content": "8Z+uYlt1PsC+2DJfRpoUVPW90eyxdXM5HBL1VXFIcPGA+kV6ckzsBuJj9BjkaBqwvSYPk/eWEVZmXHPik3KSEg=="
+            }
+          ]
+        },
+        {
+          "name": "under",
+          "version": "1.0.0",
+          "hashes": [
+            {
+              "alg": "SHA_512",
+              "content": "f19fae625b753ec0bed8325f469a1454f5bdd1ecb17573391c12f555714870f180fa457a724cec06e263f418e4681ab0bd260f93f7961156665c73e293729212"
+            }
+          ]
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "odd-length hex is not decoded",
+      "files": {
+        "package-lock.json": {
+          "packages": {
+            "node_modules/odd": {
+              "version": "1.0.0",
+              "integrity": "sha512-qw=="
+            }
+          }
+        }
+      },
+      "components": [
+        {
+          "name": "odd",
+          "version": "1.0.0",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "abc"
+            }
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "category": "security",
+          "ruleId": "SC-INTEGRITY-MISMATCH",
+          "subject": "odd",
+          "status": "review",
+          "summary": "Lockfile integrity hash mismatch for odd@1.0.0",
+          "evidence": "lockfile: \"sha512-qw==\"; SBOM hashes: [{\"alg\":\"SHA-512\",\"content\":\"abc\"}]",
+          "recommendation": "Investigate possible package tampering or lockfile poisoning before installing or deploying.",
+          "file": "package-lock.json"
+        }
+      ]
+    },
+    {
+      "name": "different version or algorithm without lockfile counterpart is not compared",
+      "files": {
+        "package-lock.json": {
+          "packages": {
+            "node_modules/v": {
+              "version": "1.0.1",
+              "integrity": "sha512-LOCKFILEFAKE/HASH+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+            },
+            "node_modules/noint": {
+              "version": "1.0.0"
+            }
+          }
+        }
+      },
+      "components": [
+        {
+          "name": "v",
+          "version": "1.0.0",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "SBOM/GENUINE+HASHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=="
+            }
+          ]
+        },
+        {
+          "name": "noint",
+          "version": "1.0.0",
+          "hashes": [
+            {
+              "alg": "SHA-512",
+              "content": "SBOM/GENUINE+HASHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=="
+            }
+          ]
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "insecure composer dist including packages-dev",
+      "files": {
+        "composer.lock": {
+          "packages": [
+            {
+              "name": "acme/http",
+              "dist": {
+                "url": "http://mirror.example/acme-http.zip"
+              }
+            },
+            {
+              "name": "acme/https",
+              "dist": {
+                "url": "https://api.github.com/repos/acme/https/zipball/1"
+              }
+            }
+          ],
+          "packages-dev": [
+            {
+              "name": "acme/dev",
+              "dist": {
+                "url": "http://mirror.example/acme-dev.zip"
+              }
+            }
+          ]
+        }
+      },
+      "components": [],
+      "expected": [
+        {
+          "category": "security",
+          "ruleId": "SC-INSECURE-REGISTRY-URL",
+          "subject": "acme/http",
+          "status": "review",
+          "summary": "Insecure HTTP download URL in composer.lock: acme/http",
+          "evidence": "dist.url: \"http://mirror.example/acme-http.zip\"",
+          "recommendation": "Use secure HTTPS package sources to avoid tampering during download.",
+          "file": "composer.lock"
+        },
+        {
+          "category": "security",
+          "ruleId": "SC-INSECURE-REGISTRY-URL",
+          "subject": "acme/dev",
+          "status": "review",
+          "summary": "Insecure HTTP download URL in composer.lock: acme/dev",
+          "evidence": "dist.url: \"http://mirror.example/acme-dev.zip\"",
+          "recommendation": "Use secure HTTPS package sources to avoid tampering during download.",
+          "file": "composer.lock"
+        }
+      ]
+    },
+    {
+      "name": "unparseable package-lock does not hide composer findings",
+      "files": {
+        "package-lock.json": "{not json",
+        "composer.lock": {
+          "packages": [
+            {
+              "name": "acme/http",
+              "dist": {
+                "url": "http://mirror.example/acme-http.zip"
+              }
+            }
+          ]
+        }
+      },
+      "components": [],
+      "expected": [
+        {
+          "category": "security",
+          "ruleId": "SC-INSECURE-REGISTRY-URL",
+          "subject": "acme/http",
+          "status": "review",
+          "summary": "Insecure HTTP download URL in composer.lock: acme/http",
+          "evidence": "dist.url: \"http://mirror.example/acme-http.zip\"",
+          "recommendation": "Use secure HTTPS package sources to avoid tampering during download.",
+          "file": "composer.lock"
+        }
+      ]
+    },
+    {
+      "name": "non-object lockfiles are ignored",
+      "files": {
+        "package-lock.json": "[1,2]",
+        "composer.lock": "\"text\""
+      },
+      "components": [],
+      "expected": []
+    }
+  ],
+  "coolOff": {
+    "now": "2026-11-17T12:00:00Z",
+    "minDays": 7,
+    "components": [
+      {
+        "name": "fresh",
+        "version": "1.0.0",
+        "ecosystem": "npm"
+      },
+      {
+        "name": "@scope/fresh",
+        "version": "2.0.0",
+        "ecosystem": "npm"
+      },
+      {
+        "name": "edge",
+        "version": "1.0.0",
+        "ecosystem": "npm"
+      },
+      {
+        "name": "almost",
+        "version": "1.0.0",
+        "ecosystem": "npm"
+      },
+      {
+        "name": "future",
+        "version": "1.0.0",
+        "ecosystem": "npm"
+      },
+      {
+        "name": "unknown",
+        "version": "1.0.0",
+        "ecosystem": "npm"
+      },
+      {
+        "name": "naive",
+        "version": "1.0.0",
+        "ecosystem": "npm"
+      },
+      {
+        "name": "bad",
+        "version": "1.0.0",
+        "ecosystem": "npm"
+      },
+      {
+        "name": "noversion",
+        "ecosystem": "npm"
+      },
+      {
+        "name": "requests",
+        "version": "2.40.0",
+        "ecosystem": "PyPI"
+      },
+      {
+        "name": "acme/lib",
+        "version": "1.2.0",
+        "ecosystem": "Packagist"
+      },
+      {
+        "name": "org.example:lib",
+        "version": "1.0.0",
+        "ecosystem": "Maven"
+      },
+      {
+        "name": "fresh",
+        "version": "1.0.0",
+        "ecosystem": "npm"
+      }
+    ],
+    "published": {
+      "npm": {
+        "fresh@1.0.0": "2026-11-14T09:30:00.000Z",
+        "@scope/fresh@2.0.0": "2026-11-17T11:59:59Z",
+        "edge@1.0.0": "2026-11-10T12:00:00Z",
+        "almost@1.0.0": "2026-11-10T12:00:01+00:00",
+        "future@1.0.0": "2026-11-18T00:00:00Z",
+        "naive@1.0.0": "2026-11-16T00:00:00",
+        "bad@1.0.0": "yesterday",
+        "noversion@": "2026-11-16T00:00:00Z"
+      },
+      "PyPI": {
+        "requests@2.40.0": "2026-11-16T23:00:00.123456Z"
+      },
+      "Packagist": {
+        "acme/lib@1.2.0": "2026-11-13T21:00:00+09:00"
+      },
+      "Maven": {
+        "org.example:lib@1.0.0": "2026-11-16T00:00:00Z"
+      }
+    },
+    "expected": [
+      {
+        "category": "security",
+        "ruleId": "SC-PACKAGE-AGE-UNVERIFIED",
+        "subject": "fresh@1.0.0",
+        "status": "review",
+        "summary": "Package version was released recently (3 day(s) ago)",
+        "evidence": "Published on 2026-11-14T09:30:00.000Z (3 days ago; cool-off threshold=7 days)",
+        "recommendation": "Allow a cool-off period before upgrading in production to guard against compromised zero-day releases."
+      },
+      {
+        "category": "security",
+        "ruleId": "SC-PACKAGE-AGE-UNVERIFIED",
+        "subject": "@scope/fresh@2.0.0",
+        "status": "review",
+        "summary": "Package version was released recently (0 day(s) ago)",
+        "evidence": "Published on 2026-11-17T11:59:59Z (0 days ago; cool-off threshold=7 days)",
+        "recommendation": "Allow a cool-off period before upgrading in production to guard against compromised zero-day releases."
+      },
+      {
+        "category": "security",
+        "ruleId": "SC-PACKAGE-AGE-UNVERIFIED",
+        "subject": "almost@1.0.0",
+        "status": "review",
+        "summary": "Package version was released recently (6 day(s) ago)",
+        "evidence": "Published on 2026-11-10T12:00:01+00:00 (6 days ago; cool-off threshold=7 days)",
+        "recommendation": "Allow a cool-off period before upgrading in production to guard against compromised zero-day releases."
+      },
+      {
+        "category": "security",
+        "ruleId": "SC-PACKAGE-AGE-UNVERIFIED",
+        "subject": "requests@2.40.0",
+        "status": "review",
+        "summary": "Package version was released recently (0 day(s) ago)",
+        "evidence": "Published on 2026-11-16T23:00:00.123456Z (0 days ago; cool-off threshold=7 days)",
+        "recommendation": "Allow a cool-off period before upgrading in production to guard against compromised zero-day releases."
+      },
+      {
+        "category": "security",
+        "ruleId": "SC-PACKAGE-AGE-UNVERIFIED",
+        "subject": "acme/lib@1.2.0",
+        "status": "review",
+        "summary": "Package version was released recently (4 day(s) ago)",
+        "evidence": "Published on 2026-11-13T21:00:00+09:00 (4 days ago; cool-off threshold=7 days)",
+        "recommendation": "Allow a cool-off period before upgrading in production to guard against compromised zero-day releases."
+      }
+    ],
+    "validDays": [
+      "1",
+      "7",
+      "3650",
+      1,
+      30
+    ],
+    "invalidDays": [
+      "0",
+      "-1",
+      "abc",
+      "1.5",
+      "3651",
+      "",
+      0,
+      1.5,
+      3651,
+      true,
+      null,
+      " 7",
+      "7d"
+    ]
+  }
+}

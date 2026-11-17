@@ -162,3 +162,51 @@ def test_report_output_does_not_follow_symlinks(tmp_path):
     for name in ("sbom.json", "database.json", "report.json", "report.docx"):
         assert not (tmp_path / name).is_symlink()
         assert (tmp_path / name).stat().st_mode & 0o077 == 0
+
+
+def test_cli_rejects_invalid_cool_off(tmp_path, capsys):
+    import pytest
+
+    for value in ("0", "abc", "3651"):
+        with pytest.raises(SystemExit) as exit_info:
+            main(
+                [
+                    "scan",
+                    str(ROOT / "examples/cyclonedx.json"),
+                    "--db",
+                    str(ROOT / "examples/database.json"),
+                    "--cool-off",
+                    value,
+                    "-o",
+                    str(tmp_path),
+                ]
+            )
+        assert exit_info.value.code == 2
+        assert "Cool-off must be a whole number" in capsys.readouterr().err
+    assert not (tmp_path / "report.json").exists()
+
+
+def test_cli_reports_insecure_lockfile_next_to_sbom(tmp_path):
+    (tmp_path / "sbom.json").write_text(
+        (ROOT / "examples/cyclonedx.json").read_text(encoding="utf-8")
+    )
+    (tmp_path / "composer.lock").write_text(
+        json.dumps(
+            {"packages": [{"name": "acme/http", "dist": {"url": "http://mirror.example/a.zip"}}]}
+        )
+    )
+    main(
+        [
+            "scan",
+            str(tmp_path / "sbom.json"),
+            "--db",
+            str(ROOT / "examples/database.json"),
+            "-o",
+            str(tmp_path / "out"),
+        ]
+    )
+    report = json.loads((tmp_path / "out" / "report.json").read_text())
+    assert any(
+        f["ruleId"] == "SC-INSECURE-REGISTRY-URL" and f["subject"] == "acme/http"
+        for f in report["findings"]
+    )
