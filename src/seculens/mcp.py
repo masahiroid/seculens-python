@@ -13,6 +13,7 @@ from .database import fetch_database, validate_database
 from .integrity import check_lockfile_integrity, check_package_cool_off, parse_cool_off_days
 from .licenses import evaluate_license
 from .sbom import parse_sbom
+from .waivers import apply_waivers, unwaived, validate_waivers
 from .word import write_word_report
 
 MCP_TOOLS = [
@@ -41,6 +42,10 @@ MCP_TOOLS = [
                         "allow": {"type": "array", "items": {"type": "string"}},
                         "deny": {"type": "array", "items": {"type": "string"}},
                     },
+                },
+                "waivers": {
+                    "type": "object",
+                    "description": "Waiver file contents (schemaVersion 1.0); waived findings keep their status and gain a waiver record",
                 },
                 "lockfileDir": {
                     "type": "string",
@@ -137,7 +142,7 @@ def handle_mcp_request(request: dict[str, Any]) -> dict[str, Any] | None:
             "result": {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}},
-                "serverInfo": {"name": "seculens-python", "version": "1.6.0"},
+                "serverInfo": {"name": "seculens-python", "version": "1.7.0"},
             },
         }
 
@@ -158,6 +163,7 @@ def handle_mcp_request(request: dict[str, Any]) -> dict[str, Any] | None:
             if name == "seculens_scan":
                 cool_off = args.get("coolOffDays")
                 cool_off_days = None if cool_off is None else parse_cool_off_days(cool_off)
+                waivers = None if args.get("waivers") is None else validate_waivers(args["waivers"])
                 sbom_path = Path(args["sbomPath"]).resolve()
                 raw = sbom_path.read_text(encoding="utf-8")
                 sbom = parse_sbom(json.loads(raw))
@@ -190,14 +196,19 @@ def handle_mcp_request(request: dict[str, Any]) -> dict[str, Any] | None:
                     report["findings"].extend(
                         check_package_cool_off(sbom["components"], cool_off_days)
                     )
+                if waivers is not None:
+                    report["findings"] = apply_waivers(
+                        report["findings"], waivers["waivers"], report["createdAt"][:10]
+                    )
+                counted = unwaived(report["findings"])
                 affected_vulns = sum(
                     1
-                    for f in report["findings"]
+                    for f in counted
                     if f.get("category") == "vulnerability" and f.get("status") == "affected"
                 )
                 denied_licenses = sum(
                     1
-                    for f in report["findings"]
+                    for f in counted
                     if f.get("category") == "license" and f.get("status") == "denied"
                 )
                 content_text = json.dumps(
@@ -205,6 +216,7 @@ def handle_mcp_request(request: dict[str, Any]) -> dict[str, Any] | None:
                         "summary": {
                             "components": len(report["sbom"]["components"]),
                             "findings": len(report["findings"]),
+                            "waived": len(report["findings"]) - len(counted),
                             "affectedVulnerabilities": affected_vulns,
                             "deniedLicenses": denied_licenses,
                         },

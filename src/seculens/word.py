@@ -48,6 +48,9 @@ _TRANSLATIONS = {
     "AST rules identify review candidates and complexity, not proven exploitability.": "AST検査は要確認のコードや複雑性を抽出します。悪用可能性を立証するものではありません。",
     "SBOM content and package identifiers are supplied by the generating tool.": "構成部品の一覧と識別情報は、SBOM生成ツールから取得した情報に依存します。",
     "Packagist matching follows Composer version normalization (up to four numeric parts and dev/alpha/beta/RC/stable/patch stability); branch versions such as dev-main or 1.x-dev are unassessed.": "PackagistはComposerのバージョン正規化（最大4桁の数値とdev/alpha/beta/RC/stable/patchの安定度）に従って照合します。dev-mainや1.x-devなどのブランチ指定は未判定になります。",
+    "Waivers record customer-approved decisions that SecuLens does not verify; waived findings remain in the report and are excluded only from exit codes.": "適用除外（waiver）は顧客が承認した判断を記録したもので、SecuLensはその内容を検証しません。適用除外した指摘は報告書に残り、終了コードの判定からのみ除外されます。",
+    "Remediate the finding or renew the waiver after a new review.": "指摘に対応するか、再審査のうえ適用除外を更新してください。",
+    "Remove the waiver, or correct its ruleId or subject.": "適用除外を削除するか、ruleIdまたはsubjectを修正してください。",
 }
 
 
@@ -235,6 +238,15 @@ def write_word_report(
             )
             location = f" | line {finding['line']}" if finding.get("line") else ""
             p(f"{subject} | {status(finding['status'])}{location}")
+            waiver = finding.get("waiver")
+            if waiver:
+                p(
+                    f"適用除外 {waiver['expires']}まで | 承認者 {waiver['approvedBy']} | "
+                    f"{waiver['justification']} | {waiver['source']}"
+                    if ja
+                    else f"Waived until {waiver['expires']} | approved by {waiver['approvedBy']} | "
+                    f"{waiver['justification']} | {waiver['source']}"
+                )
             p(f"{'根拠' if ja else 'Evidence'} {finding['evidence']}")
             p(f"{'推奨対応' if ja else 'Action'} {localize(finding['recommendation'])}")
             if finding.get("aliases"):

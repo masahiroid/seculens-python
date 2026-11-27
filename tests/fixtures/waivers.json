@@ -1,0 +1,731 @@
+{
+  "cases": [
+    {
+      "name": "no waivers",
+      "date": "2026-12-01",
+      "findings": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        }
+      ],
+      "waivers": [],
+      "expected": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        }
+      ]
+    },
+    {
+      "name": "ruleId without subject waives every subject",
+      "date": "2026-12-01",
+      "findings": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        },
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/right@2.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:right@2.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        }
+      ],
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "GHSA-aaaa-bbbb-cccc"
+        }
+      ],
+      "expected": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": [],
+          "waiver": {
+            "source": "waivers[0]",
+            "justification": "Not reachable in production build",
+            "approvedBy": "Security team",
+            "expires": "2027-01-31"
+          }
+        },
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/right@2.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:right@2.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": [],
+          "waiver": {
+            "source": "waivers[0]",
+            "justification": "Not reachable in production build",
+            "approvedBy": "Security team",
+            "expires": "2027-01-31"
+          }
+        }
+      ]
+    },
+    {
+      "name": "alias matches",
+      "date": "2026-12-01",
+      "findings": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        }
+      ],
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "CVE-2026-0001",
+          "subject": "pkg:npm/left@1.0.0"
+        }
+      ],
+      "expected": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": [],
+          "waiver": {
+            "source": "waivers[0]",
+            "justification": "Not reachable in production build",
+            "approvedBy": "Security team",
+            "expires": "2027-01-31"
+          }
+        }
+      ]
+    },
+    {
+      "name": "subject restricts the match",
+      "date": "2026-12-01",
+      "findings": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        },
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/right@2.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:right@2.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        }
+      ],
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/right@2.0.0"
+        }
+      ],
+      "expected": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        },
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/right@2.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:right@2.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": [],
+          "waiver": {
+            "source": "waivers[0]",
+            "justification": "Not reachable in production build",
+            "approvedBy": "Security team",
+            "expires": "2027-01-31"
+          }
+        }
+      ]
+    },
+    {
+      "name": "expiry day is inclusive",
+      "date": "2027-01-31",
+      "findings": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        }
+      ],
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "GHSA-aaaa-bbbb-cccc"
+        }
+      ],
+      "expected": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": [],
+          "waiver": {
+            "source": "waivers[0]",
+            "justification": "Not reachable in production build",
+            "approvedBy": "Security team",
+            "expires": "2027-01-31"
+          }
+        }
+      ]
+    },
+    {
+      "name": "expired waiver keeps the finding and is reported",
+      "date": "2027-02-01",
+      "findings": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        }
+      ],
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "GHSA-aaaa-bbbb-cccc"
+        }
+      ],
+      "expected": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        },
+        {
+          "category": "quality",
+          "ruleId": "WAIVER-EXPIRED",
+          "subject": "waivers[0]",
+          "status": "review",
+          "summary": "Waiver expired",
+          "evidence": "GHSA-aaaa-bbbb-cccc expired 2027-01-31; approved by Security team",
+          "recommendation": "Remediate the finding or renew the waiver after a new review."
+        }
+      ]
+    },
+    {
+      "name": "active waiver wins over an expired one",
+      "date": "2026-12-01",
+      "findings": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        }
+      ],
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2026-01-01",
+          "ruleId": "GHSA-aaaa-bbbb-cccc"
+        },
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "CISO",
+          "expires": "2027-01-31",
+          "ruleId": "CVE-2026-0001"
+        }
+      ],
+      "expected": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": [],
+          "waiver": {
+            "source": "waivers[1]",
+            "justification": "Not reachable in production build",
+            "approvedBy": "CISO",
+            "expires": "2027-01-31"
+          }
+        },
+        {
+          "category": "quality",
+          "ruleId": "WAIVER-EXPIRED",
+          "subject": "waivers[0]",
+          "status": "review",
+          "summary": "Waiver expired",
+          "evidence": "GHSA-aaaa-bbbb-cccc expired 2026-01-01; approved by Security team",
+          "recommendation": "Remediate the finding or renew the waiver after a new review."
+        }
+      ]
+    },
+    {
+      "name": "first active waiver is recorded",
+      "date": "2026-12-01",
+      "findings": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": []
+        }
+      ],
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "A",
+          "expires": "2027-01-31",
+          "ruleId": "GHSA-aaaa-bbbb-cccc"
+        },
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "B",
+          "expires": "2027-01-31",
+          "ruleId": "CVE-2026-0001"
+        }
+      ],
+      "expected": [
+        {
+          "category": "vulnerability",
+          "ruleId": "GHSA-aaaa-bbbb-cccc",
+          "subject": "pkg:npm/left@1.0.0",
+          "status": "affected",
+          "summary": "Prototype pollution",
+          "evidence": "npm:left@1.0.0; matched",
+          "recommendation": "Upgrade.",
+          "aliases": [
+            "CVE-2026-0001"
+          ],
+          "references": [],
+          "waiver": {
+            "source": "waivers[0]",
+            "justification": "Not reachable in production build",
+            "approvedBy": "A",
+            "expires": "2027-01-31"
+          }
+        }
+      ]
+    },
+    {
+      "name": "unmatched waiver is reported",
+      "date": "2026-12-01",
+      "findings": [
+        {
+          "category": "license",
+          "ruleId": "LICENSE-POLICY",
+          "subject": "pkg:npm/gpl@1.0.0",
+          "status": "denied",
+          "summary": "Denied license",
+          "evidence": "GPL-3.0-only",
+          "recommendation": "Replace."
+        }
+      ],
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "GHSA-zzzz-zzzz-zzzz",
+          "subject": "pkg:npm/none@1.0.0"
+        },
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "LICENSE-POLICY"
+        }
+      ],
+      "expected": [
+        {
+          "category": "license",
+          "ruleId": "LICENSE-POLICY",
+          "subject": "pkg:npm/gpl@1.0.0",
+          "status": "denied",
+          "summary": "Denied license",
+          "evidence": "GPL-3.0-only",
+          "recommendation": "Replace.",
+          "waiver": {
+            "source": "waivers[1]",
+            "justification": "Not reachable in production build",
+            "approvedBy": "Security team",
+            "expires": "2027-01-31"
+          }
+        },
+        {
+          "category": "quality",
+          "ruleId": "WAIVER-UNMATCHED",
+          "subject": "waivers[0]",
+          "status": "review",
+          "summary": "Waiver matched no finding",
+          "evidence": "GHSA-zzzz-zzzz-zzzz on pkg:npm/none@1.0.0; expires 2027-01-31",
+          "recommendation": "Remove the waiver, or correct its ruleId or subject."
+        }
+      ]
+    },
+    {
+      "name": "license and coverage findings can be waived",
+      "date": "2026-12-01",
+      "findings": [
+        {
+          "category": "license",
+          "ruleId": "LICENSE-POLICY",
+          "subject": "pkg:npm/gpl@1.0.0",
+          "status": "denied",
+          "summary": "Denied license",
+          "evidence": "GPL-3.0-only",
+          "recommendation": "Replace."
+        },
+        {
+          "category": "coverage",
+          "ruleId": "PACKAGE-IDENTITY",
+          "subject": "dev-main",
+          "status": "unassessed",
+          "summary": "Component could not be assessed",
+          "evidence": "Unsupported package version syntax",
+          "recommendation": "Regenerate."
+        }
+      ],
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "LICENSE-POLICY",
+          "subject": "pkg:npm/gpl@1.0.0"
+        },
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "PACKAGE-IDENTITY"
+        }
+      ],
+      "expected": [
+        {
+          "category": "license",
+          "ruleId": "LICENSE-POLICY",
+          "subject": "pkg:npm/gpl@1.0.0",
+          "status": "denied",
+          "summary": "Denied license",
+          "evidence": "GPL-3.0-only",
+          "recommendation": "Replace.",
+          "waiver": {
+            "source": "waivers[0]",
+            "justification": "Not reachable in production build",
+            "approvedBy": "Security team",
+            "expires": "2027-01-31"
+          }
+        },
+        {
+          "category": "coverage",
+          "ruleId": "PACKAGE-IDENTITY",
+          "subject": "dev-main",
+          "status": "unassessed",
+          "summary": "Component could not be assessed",
+          "evidence": "Unsupported package version syntax",
+          "recommendation": "Regenerate.",
+          "waiver": {
+            "source": "waivers[1]",
+            "justification": "Not reachable in production build",
+            "approvedBy": "Security team",
+            "expires": "2027-01-31"
+          }
+        }
+      ]
+    }
+  ],
+  "valid": [
+    {
+      "schemaVersion": "1.0",
+      "waivers": []
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2028-02-29",
+          "ruleId": "X",
+          "subject": "pkg:npm/x@1.0.0"
+        }
+      ]
+    }
+  ],
+  "invalid": [
+    null,
+    [],
+    {},
+    {
+      "schemaVersion": "1.1",
+      "waivers": []
+    },
+    {
+      "schemaVersion": "1.0"
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": {}
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [],
+      "extra": 1
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        "x"
+      ]
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31"
+        }
+      ]
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": " "
+        }
+      ]
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        {
+          "justification": "",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "X"
+        }
+      ]
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": 1,
+          "expires": "2027-01-31",
+          "ruleId": "X"
+        }
+      ]
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "X",
+          "subject": ""
+        }
+      ]
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-02-30",
+          "ruleId": "X"
+        }
+      ]
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-1-31",
+          "ruleId": "X"
+        }
+      ]
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31T00:00:00Z",
+          "ruleId": "X"
+        }
+      ]
+    },
+    {
+      "schemaVersion": "1.0",
+      "waivers": [
+        {
+          "justification": "Not reachable in production build",
+          "approvedBy": "Security team",
+          "expires": "2027-01-31",
+          "ruleId": "X",
+          "reviewer": "me"
+        }
+      ]
+    }
+  ]
+}

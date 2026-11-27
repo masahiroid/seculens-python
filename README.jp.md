@@ -118,6 +118,35 @@ SPDXの`AND`は全分岐の許可、`OR`はいずれかの選択肢の許可が�
 
 パッケージ名（指定があれば`ecosystem`も）が一致し、その要素を指定している最初の`components`の項目が使われ、なければ`defaults`が使われます。どの項目にも`justification`が必須です。各指摘の`priority`には、使った要素、効果、出典、根拠を記録し、Wordレポートにも表示します。SecuLensは申告内容を検証しないため、優先度は悪用可能性を確定するものではありません。
 
+## 適用除外（waiver）
+
+適用除外は、承認済みの判断として指摘への対応を期限まで見送ることを記録します。`--waivers`でファイルを指定します。
+
+```json
+{
+  "schemaVersion": "1.0",
+  "waivers": [
+    {
+      "ruleId": "GHSA-xxxx-xxxx-xxxx",
+      "subject": "pkg:npm/example@1.2.3",
+      "justification": "該当関数は本番ビルドで使用していない",
+      "approvedBy": "セキュリティチーム",
+      "expires": "2027-03-31"
+    }
+  ]
+}
+```
+
+```sh
+seculens scan sbom.json --db osv.json --waivers waivers.json --fail-on-findings
+```
+
+- `ruleId`は指摘のルールIDまたは関連ID（エイリアス）のいずれかに一致します。`subject`（任意）は指摘の対象と完全一致が必要で、省略するとすべての対象に適用します。
+- `justification`、`approvedBy`、`expires`（`YYYY-MM-DD`、当日を含む。レポート作成日（UTC）と比較）は必須です。未知のキーや不正な日付は終了コード2で拒否します。
+- 適用除外した指摘は状態と根拠をそのまま残し、`waiver`（出典、理由、承認者、期限）を記録します。除外されるのは終了コードの判定のみで、Wordレポートでは指摘の下に表示します。
+- 期限切れの適用除外は適用されず、確認用の`WAIVER-EXPIRED`を追加します。どの指摘にも一致しない場合は`WAIVER-UNMATCHED`を追加します。
+- `seculens validate waivers.json --kind waivers`で`schemas/waivers-1.0.schema.json`に照らして検証できます。MCPの`seculens_scan`も同じ内容を`waivers`として受け付けます。
+
 ## Pythonソース解析
 
 `--source`で`.py`ファイルを読み込み、インポート・実行せずに解析します。`eval`／`exec`、OSのシェル呼び出し、リテラルの`shell=True`を使う`subprocess`、pickleのデシリアライズ、安全なローダーが明示されていないYAML読み込みを確認候補として検出します。循環的複雑度が10を超える場合、ネスト深度が4を超える場合も確認対象です。
@@ -128,7 +157,8 @@ SPDXの`AND`は全分岐の許可、`OR`はいずれかの選択肢の許可が�
 
 ```sh
 seculens validate sbom.json                 # SPDX 2.2/2.3 または CycloneDX 1.4〜1.7 JSON
-seculens validate report.json --kind report # SecuLens レポートスキーマ 1.1
+seculens validate report.json --kind report # SecuLens レポートスキーマ 1.1〜1.3
+seculens validate waivers.json --kind waivers # SecuLens 適用除外ファイル 1.0
 ```
 
 同梱の公式スキーマ（`schemas/`、出典・ハッシュ・ライセンスはそのREADME参照）でオフライン検証します。出力はJSON `{valid, schema, errors[]}` です。終了コード `0` は妥当、`2` は不正・未対応バージョン・入力エラーです。構造と書式の検証のみで、SBOMの網羅性や検出結果の正しさは保証しません。
@@ -138,6 +168,7 @@ seculens validate report.json --kind report # SecuLens レポートスキーマ 
 - `0`：検査完了。検出結果が存在する場合もあります。
 - `1`：`--fail-on-findings`指定時に脆弱性、拒否ライセンス、セキュリティ確認候補を検出。
 - `2`：解析範囲の不足または実行エラー。指定時は終了コード1が優先されます。
+- 有効な適用除外がある指摘は、終了コード`1`・`2`の判定に含めません。
 
 ```python
 from seculens import scan_sbom, write_word_report

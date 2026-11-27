@@ -43,8 +43,8 @@ def scan_sbom(
     validate_database(records)
     policy = validate_policy({} if policy is None else policy)
     report: dict[str, Any] = {
-        "schemaVersion": "1.2",
-        "tool": {"name": "SecuLens", "version": "1.6.0"},
+        "schemaVersion": "1.3",
+        "tool": {"name": "SecuLens", "version": "1.7.0"},
         "createdAt": created_at
         or datetime.now(UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
         "customer": customer,
