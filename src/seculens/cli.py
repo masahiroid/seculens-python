@@ -17,6 +17,7 @@ from .integrity import check_lockfile_integrity, check_package_cool_off, parse_c
 from .mcp import run_mcp_server
 from .sbom import parse_sbom
 from .validation import validate_document
+from .waivers import WAIVER_LIMITATION, apply_waivers, unwaived, validate_waivers
 from .wizard import wizard
 from .word import write_word_report
 
@@ -44,14 +45,14 @@ def _main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="seculens", description="SBOM assessment and evidence-based customer reports"
     )
-    parser.add_argument("--version", action="version", version="1.6.0")
+    parser.add_argument("--version", action="version", version="1.7.0")
     commands = parser.add_subparsers(dest="command", required=True)
     interactive = commands.add_parser("wizard", help="Interactive setup in English or Japanese")
     interactive.add_argument("--lang", choices=("en", "ja"))
     commands.add_parser("mcp", help="Start the SecuLens Model Context Protocol (MCP) stdio server")
     validation = commands.add_parser("validate", help="Validate SBOM or report JSON offline")
     validation.add_argument("file", type=Path)
-    validation.add_argument("--kind", choices=("sbom", "report"), default="sbom")
+    validation.add_argument("--kind", choices=("sbom", "report", "waivers"), default="sbom")
     sbom = commands.add_parser("sbom", help="Generate CycloneDX or SPDX JSON using Syft")
     sbom.add_argument("project", type=Path)
     sbom.add_argument("--format", choices=("cyclonedx", "spdx"), default="cyclonedx")
@@ -65,6 +66,11 @@ def _main(argv: list[str] | None = None) -> int:
         "--fetch-osv", action="store_true", help="Send package names/ecosystems to OSV"
     )
     scan.add_argument("--policy", type=Path)
+    scan.add_argument(
+        "--waivers",
+        type=Path,
+        help="Waiver JSON: waived findings stay in the report but do not set the exit code",
+    )
     scan.add_argument("--source", type=Path, help="Run Python AST review rules")
     scan.add_argument(
         "--cool-off",
@@ -143,6 +149,11 @@ def _main(argv: list[str] | None = None) -> int:
             records = fetch_database(parsed["components"])
             database_text = json.dumps({"records": records}, ensure_ascii=False, indent=2) + "\n"
         policy = _json(opts.policy.read_text(encoding="utf-8")) if opts.policy else {}
+        waivers = (
+            validate_waivers(_json(opts.waivers.read_text(encoding="utf-8")))
+            if opts.waivers
+            else None
+        )
         report = scan_sbom(
             input_text,
             records,
@@ -162,6 +173,11 @@ def _main(argv: list[str] | None = None) -> int:
             report["findings"].extend(
                 check_package_cool_off(parsed["components"], min_days=opts.cool_off)
             )
+        if waivers is not None:
+            report["findings"] = apply_waivers(
+                report["findings"], waivers["waivers"], report["createdAt"][:10]
+            )
+            report["limitations"].append(WAIVER_LIMITATION)
         opts.output.mkdir(parents=True, exist_ok=True, mode=0o700)
         with tempfile.TemporaryDirectory(prefix=".seculens-", dir=opts.output) as folder:
             temporary = Path(folder)
@@ -186,12 +202,12 @@ def _main(argv: list[str] | None = None) -> int:
             if ui_language == "ja"
             else f"{len(parsed['components'])} components; {len(report['findings'])} findings. Reports: {opts.output}"
         )
+        counted = unwaived(report["findings"])
         if opts.fail_on_findings and any(
-            f["status"] in ("affected", "denied") or f["category"] == "security"
-            for f in report["findings"]
+            f["status"] in ("affected", "denied") or f["category"] == "security" for f in counted
         ):
             return 1
-        return 2 if any(f["status"] == "unassessed" for f in report["findings"]) else 0
+        return 2 if any(f["status"] == "unassessed" for f in counted) else 0
     except Exception as error:
         print(f"SecuLens: {error}", file=sys.stderr)
         return 2

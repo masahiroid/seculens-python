@@ -2,7 +2,7 @@
 
 The Python implementation owns SBOM normalization, ecosystem version comparisons, OSV candidate downloads and local matching, SPDX license policy evaluation, Python AST rules, and Word generation. It does not invoke TypeScript or Trivy. Syft is optional and used only for SBOM generation.
 
-`report.json` uses SecuLens schema 1.2: tool/version, creation time, customer, target, SBOM and database hashes, normalized components/dependencies/warnings, per-component checks, findings and limitations. Fixed input text, advisory records and `created_at` produce deterministic assessment JSON. Word font embedding uses a generated GUID, so DOCX bytes are not deterministic.
+`report.json` uses SecuLens schema 1.3: tool/version, creation time, customer, target, SBOM and database hashes, normalized components/dependencies/warnings, per-component checks, findings (with optional priority and waiver records) and limitations. Fixed input text, advisory records and `created_at` produce deterministic assessment JSON. Word font embedding uses a generated GUID, so DOCX bytes are not deterministic.
 
 `validation.py` validates SBOM and report JSON offline against the schemas bundled in `src/seculens/schemas/` (shared byte-for-byte with the TypeScript and PHP repositories). It never resolves remote references.
 
@@ -15,3 +15,7 @@ See the README customer report mode section for severity evidence and layout opt
 ## Supply-chain checks
 
 Lockfile integrity (`package-lock.json`, `composer.lock`) runs on every scan without network access. `--cool-off` looks up release dates for npm, PyPI and Packagist components and evaluates them with a pure function, so the decision is tested offline against the shared `supply-chain.json` fixture, which all three implementations must reproduce field for field. Failed lookups produce no finding.
+
+## Waivers
+
+`--waivers` reads a file that follows `schemas/waivers-1.0.schema.json`. Waivers are applied after every other check, by a pure function evaluated on the report date (UTC), so the shared `waivers.json` fixture tests matching, expiry and the `WAIVER-EXPIRED` and `WAIVER-UNMATCHED` findings offline in all three implementations. A waived finding keeps its status; only exit codes ignore it.

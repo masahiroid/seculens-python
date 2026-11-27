@@ -25,13 +25,16 @@ def _validator(name: str) -> Draft7Validator:
 
 def validate_document(data: Any, kind: str = "sbom") -> dict[str, Any]:
     if kind == "report":
+        version = data.get("schemaVersion") if isinstance(data, dict) else None
         name = (
-            "report-1.1.schema.json"
-            if isinstance(data, dict) and data.get("schemaVersion") == "1.1"
-            else "report-1.2.schema.json"
+            f"report-{version}.schema.json"
+            if version in ("1.1", "1.2")
+            else "report-1.3.schema.json"
         )
+    elif kind == "waivers":
+        name = "waivers-1.0.schema.json"
     elif kind != "sbom":
-        raise ValueError("Kind must be sbom or report")
+        raise ValueError("Kind must be sbom, report or waivers")
     elif (
         isinstance(data, dict)
         and data.get("bomFormat") == "CycloneDX"

@@ -18,9 +18,10 @@ from .mcp import MCP_TOOLS, handle_mcp_request, run_mcp_server
 from .priority import component_priority, validate_context
 from .sbom import compute_dependency_depths, parse_sbom
 from .validation import validate_document
+from .waivers import apply_waivers, is_calendar_date, unwaived, validate_waivers
 from .word import write_word_report
 
-__version__ = "1.6.0"
+__version__ = "1.7.0"
 __all__ = [
     "scan_sbom",
     "validate_document",
@@ -32,6 +33,10 @@ __all__ = [
     "cvss4_score",
     "component_priority",
     "validate_context",
+    "apply_waivers",
+    "validate_waivers",
+    "unwaived",
+    "is_calendar_date",
     "fetch_database",
     "validate_database",
     "analyze",

@@ -115,6 +115,35 @@ Each finding starts from a baseline: Critical is P1, High and Unrated are P2, Me
 
 The first `components` entry that matches the package name (and `ecosystem`, if given) and states a factor wins; otherwise `defaults` applies. Every entry requires a `justification`. Each finding records the factors used, their effect, source and justification in `priority`, and the Word report shows them. SecuLens does not verify these statements, so a priority does not establish exploitability.
 
+## Waivers
+
+A waiver records an approved decision not to act on a finding until a date. Pass a waiver file with `--waivers`:
+
+```json
+{
+  "schemaVersion": "1.0",
+  "waivers": [
+    {
+      "ruleId": "GHSA-xxxx-xxxx-xxxx",
+      "subject": "pkg:npm/example@1.2.3",
+      "justification": "The affected function is not used in production builds",
+      "approvedBy": "Security team",
+      "expires": "2027-03-31"
+    }
+  ]
+}
+```
+
+```sh
+seculens scan sbom.json --db osv.json --waivers waivers.json --fail-on-findings
+```
+
+- `ruleId` matches a finding's rule ID or any of its aliases. `subject` (optional) must equal the finding's subject; without it the waiver covers every subject.
+- `justification`, `approvedBy` and `expires` (`YYYY-MM-DD`, inclusive, compared with the report date in UTC) are required. Unknown keys and invalid dates are rejected with exit code 2.
+- A waived finding keeps its status and evidence and gains a `waiver` record (source, justification, approver, expiry). It is left out of exit codes only; Word reports show the waiver under the finding.
+- A waiver that has expired adds a `WAIVER-EXPIRED` review finding and no longer applies. A waiver that matches nothing adds `WAIVER-UNMATCHED`.
+- `seculens validate waivers.json --kind waivers` checks a file against `schemas/waivers-1.0.schema.json`. MCP `seculens_scan` accepts the same object as `waivers`.
+
 ## Python analysis
 
 `--source` parses `.py` files without importing or executing them. Rules review `eval` / `exec`, OS shell calls, `subprocess` with literal `shell=True`, pickle deserialization and YAML loading without an explicit safe loader. Complexity review triggers above cyclomatic 10 or nesting 4. Imports and aliases are recognized syntactically; shadowing, dynamic aliases, data flow and exploitability are not resolved. Syntax errors become coverage findings. Virtual environments, dependency/build directories and symlinks are skipped. JS/TS source analysis belongs to the [TypeScript implementation](https://github.com/masahiroid/seculens); PHP source analysis is available in the [independent PHP implementation](https://github.com/masahiroid/seculens-php).
@@ -123,7 +152,8 @@ The first `components` entry that matches the package name (and `ecosystem`, if 
 
 ```sh
 seculens validate sbom.json                 # SPDX 2.2/2.3 or CycloneDX 1.4–1.7 JSON
-seculens validate report.json --kind report # SecuLens report schema 1.1
+seculens validate report.json --kind report # SecuLens report schema 1.1–1.3
+seculens validate waivers.json --kind waivers # SecuLens waiver file 1.0
 ```
 
 Validation runs offline against the official schemas bundled in `schemas/` (see its README for sources, hashes and licenses). Output is JSON `{valid, schema, errors[]}`. Exit code `0` means valid; `2` means invalid, an unsupported version, or an input error. Schema validation checks structure and formats only; it does not prove an SBOM is complete or that findings are correct.
@@ -133,6 +163,7 @@ Validation runs offline against the official schemas bundled in `schemas/` (see 
 - `0`: assessment completed (findings may exist).
 - `1`: `--fail-on-findings` and a vulnerability, denied license or security review candidate exists.
 - `2`: incomplete coverage or an operational error; status 1 takes precedence when requested.
+- Findings with an active waiver do not count toward exit codes `1` or `2`.
 
 ```python
 from seculens import scan_sbom, write_word_report
@@ -141,7 +172,7 @@ report = scan_sbom(sbom_text, records, policy={"allow": ["MIT"]}, customer="Cust
 write_word_report(report, "report.docx", language="ja")
 ```
 
-Schema `1.1` is shared with the TypeScript implementation. Advisory matching supports PyPI PEP 440, npm SemVer and Composer versions with Composer stability ordering (dev, alpha, beta, RC, stable, patch); Composer branches and Git commit ranges can remain unassessed. Customer-specific risk prioritization, reachability, container/OS scanning and full SAST are future work. Reports do not claim those checks were performed.
+Report schema `1.3` is shared with the TypeScript and PHP implementations. Advisory matching supports PyPI PEP 440, npm SemVer and Composer versions with Composer stability ordering (dev, alpha, beta, RC, stable, patch); Composer branches and Git commit ranges can remain unassessed. Customer-specific risk prioritization, reachability, container/OS scanning and full SAST are future work. Reports do not claim those checks were performed.
 
 ## Validation
 
